@@ -4,6 +4,8 @@ using AuditGuard.Application.Interfaces;
 using AuditGuard.Application.Services;
 using AuditGuard.Infrastructure.Clients;
 using AuditGuard.Infrastructure.Persistence;
+using AuditGuard.Infrastructure.Services;
+using AuditGuard.Api.Workers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +25,10 @@ builder.Services.AddDbContext<AuditDbContext>(options =>
         npgsqlOptions.UseVector();
     });
 });
+
+// Đăng ký Channel Task Queue & Hosted Service Worker bất đồng bộ
+builder.Services.AddSingleton<IAuditTaskQueue, AuditTaskQueue>();
+builder.Services.AddHostedService<AuditProcessingWorker>();
 
 // Đăng ký Services & Clients
 builder.Services.AddHttpClient<IAiEngineClient, AiEngineClient>();
@@ -52,6 +58,21 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// Tự động kiểm tra và khởi tạo schema Database nếu kết nối được
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AuditDbContext>();
+    try
+    {
+        db.Database.EnsureCreated();
+        Console.WriteLine("[Database] Khởi tạo kết nối và đồng bộ schema PostgreSQL thành công.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Database Warning] Chưa kết nối được DB (sẽ dùng cache/offline): {ex.Message}");
+    }
+}
 
 // Cấu hình Middleware
 if (app.Environment.IsDevelopment())

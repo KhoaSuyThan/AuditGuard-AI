@@ -4,17 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AuditGuard.Api.Hubs;
 using AuditGuard.Application.DTOs;
 using AuditGuard.Application.Interfaces;
+using AuditGuard.Application.Models;
 using AuditGuard.Domain.Entities;
 using AuditGuard.Domain.Enums;
 using AuditGuard.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using AuditGuard.Api.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AuditGuard.Api.Controllers;
 
@@ -26,233 +28,370 @@ public class AuditController : ControllerBase
     private readonly IDisputeEmailService _emailService;
     private readonly IHubContext<AuditHub> _hubContext;
     private readonly AuditDbContext _dbContext;
+    private readonly IAuditTaskQueue _taskQueue;
     private readonly IHostEnvironment _env;
+    private readonly ILogger<AuditController> _logger;
 
-    private static readonly Dictionary<Guid, AuditSessionDto> _sessionCache = new();
+    private static readonly string[] AllowedExtensions = { ".pdf", ".json", ".png", ".jpg", ".jpeg", ".webp" };
+    private const long MaxFileSize = 20 * 1024 * 1024; // 20 MB
 
     public AuditController(
         IAuditEngine auditEngine,
         IDisputeEmailService emailService,
         IHubContext<AuditHub> hubContext,
         AuditDbContext dbContext,
-        IHostEnvironment env)
+        IAuditTaskQueue taskQueue,
+        IHostEnvironment env,
+        ILogger<AuditController> logger)
     {
         _auditEngine = auditEngine;
         _emailService = emailService;
         _hubContext = hubContext;
         _dbContext = dbContext;
+        _taskQueue = taskQueue;
         _env = env;
+        _logger = logger;
     }
 
     /// <summary>
-    /// Nạp 20 kịch bản mẫu từ thư mục data-samples/
+    /// Lấy danh sách 20 kịch bản mẫu từ data-samples
     /// </summary>
     [HttpGet("scenarios")]
-    public ActionResult<List<ScenarioInfoDto>> GetScenarios()
+    public ActionResult<IEnumerable<ScenarioInfoDto>> GetScenarios()
     {
-        var rootDir = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples"));
-        if (!Directory.Exists(rootDir))
+        var root = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples"));
+        if (!Directory.Exists(root))
         {
-            return Ok(new List<ScenarioInfoDto>());
+            return Ok(Array.Empty<ScenarioInfoDto>());
         }
 
-        var results = new List<ScenarioInfoDto>();
-        var scenarioDirs = Directory.GetDirectories(rootDir);
+        var dirs = Directory.GetDirectories(root);
+        var list = new List<ScenarioInfoDto>();
 
-        foreach (var dir in scenarioDirs.OrderBy(d => d))
+        foreach (var dir in dirs)
         {
-            var infoPath = Path.Combine(dir, "scenario_info.json");
-            if (System.IO.File.Exists(infoPath))
+            var folder = Path.GetFileName(dir);
+            var descPath = Path.Combine(dir, "description.txt");
+            var desc = System.IO.File.Exists(descPath) ? System.IO.File.ReadAllText(descPath).Trim() : folder;
+
+            list.Add(new ScenarioInfoDto
             {
-                try
-                {
-                    var json = System.IO.File.ReadAllText(infoPath);
-                    using var doc = JsonDocument.Parse(json);
-                    var root = doc.RootElement;
-
-                    results.Add(new ScenarioInfoDto
-                    {
-                        ScenarioId = root.TryGetProperty("scenario_id", out var sid) ? sid.GetString() ?? "" : "",
-                        FolderName = Path.GetFileName(dir),
-                        Name = root.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "",
-                        Description = root.TryGetProperty("description", out var desc) ? desc.GetString() ?? "" : "",
-                        ExpectedResult = root.TryGetProperty("expected_result", out var er) ? er.GetString() ?? "" : "",
-                        FinancialImpactVnd = root.TryGetProperty("financial_impact_vnd", out var fi) ? fi.GetDecimal() : 0m
-                    });
-                }
-                catch { }
-            }
+                ScenarioId = folder,
+                FolderName = folder,
+                Name = folder.Replace("_", " ").ToUpper(),
+                Description = desc,
+                ExpectedResult = "Đối soát 3 chiều tự động",
+                FinancialImpactVnd = 0
+            });
         }
 
-        return Ok(results);
+        return Ok(list.OrderBy(x => x.FolderName));
     }
 
     /// <summary>
-    /// Chạy đối soát kịch bản mẫu và lưu vào CSDL
+    /// Chạy đối soát kịch bản mẫu bất đồng bộ qua Background Worker Channel
+    /// </summary>
+    [HttpPost("scenarios/{folderName}/run-async")]
+    public async Task<IActionResult> RunScenarioAsync(string folderName, [FromQuery] string? clientSessionId = null)
+    {
+        var root = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples", folderName));
+        if (!Directory.Exists(root))
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Không tìm thấy kịch bản",
+                Detail = $"Thư mục kịch bản {folderName} không tồn tại.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
+
+        var sessionId = Guid.NewGuid();
+
+        // Khởi tạo bản ghi PENDING trong CSDL ngay lập tức
+        try
+        {
+            var auditSession = new AuditSession
+            {
+                Id = sessionId,
+                SessionCode = "SES-" + sessionId.ToString()[..8].ToUpper(),
+                Status = AuditStatus.Pending,
+                Notes = "QUEUED: Kịch bản đã được đưa vào hàng đợi xử lý nền.",
+                CreatedAt = DateTime.UtcNow
+            };
+            _dbContext.AuditSessions.Add(auditSession);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Không thể tạo trước bản ghi PENDING trong CSDL. Tiếp tục với hàng đợi.");
+        }
+
+        var job = new AuditBackgroundJob
+        {
+            SessionId = sessionId,
+            ClientSessionId = clientSessionId,
+            ScenarioFolderName = folderName
+        };
+
+        await _taskQueue.EnqueueAsync(job);
+
+        return Accepted(new
+        {
+            SessionId = sessionId,
+            Status = "QUEUED",
+            Message = $"Kịch bản {folderName} đã được đưa vào hàng đợi đối soát bất đồng bộ."
+        });
+    }
+
+    /// <summary>
+    /// Chạy đối soát kịch bản mẫu đồng bộ (trả về kết quả ngay)
     /// </summary>
     [HttpPost("scenarios/{folderName}/run")]
     public async Task<ActionResult<AuditSessionDto>> RunScenario(string folderName, [FromQuery] string? clientSessionId = null)
     {
-        var rootDir = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples", folderName));
-        if (!Directory.Exists(rootDir))
+        var root = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples", folderName));
+        if (!Directory.Exists(root))
         {
-            return NotFound(new { error = $"Không tìm thấy kịch bản {folderName}" });
+            return NotFound(new ProblemDetails
+            {
+                Title = "Không tìm thấy kịch bản",
+                Detail = $"Thư mục kịch bản {folderName} không tồn tại.",
+                Status = StatusCodes.Status404NotFound
+            });
         }
 
-        var channel = clientSessionId ?? folderName;
-        await SendProgress(channel, "INGESTION", 20, "Đang nạp bộ chứng từ (PO, Phiếu kho, Hóa đơn)...");
+        var poFile = Path.Combine(root, "purchase_order.json");
+        var grnFile = Path.Combine(root, "goods_receipt.json");
+        if (!System.IO.File.Exists(grnFile))
+        {
+            grnFile = Path.Combine(root, "goods_receipt_note.json");
+        }
+        var invFile = Path.Combine(root, "invoice.json");
+
+        if (!System.IO.File.Exists(poFile) || !System.IO.File.Exists(grnFile) || !System.IO.File.Exists(invFile))
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Thiếu tệp dữ liệu kịch bản",
+                Detail = "Kịch bản phải chứa đủ purchase_order.json, goods_receipt.json (hoặc goods_receipt_note.json) và invoice.json.",
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
+
+        PurchaseOrder po;
+        GoodsReceipt grn;
+        Invoice invoice;
 
         try
         {
-            var poJson = await System.IO.File.ReadAllTextAsync(Path.Combine(rootDir, "purchase_order.json"));
-            var grnJson = await System.IO.File.ReadAllTextAsync(Path.Combine(rootDir, "goods_receipt.json"));
-            var invJson = await System.IO.File.ReadAllTextAsync(Path.Combine(rootDir, "invoice.json"));
-
-            var po = SafeParsePo(poJson);
-            var grn = SafeParseGrn(grnJson);
-            var inv = SafeParseInvoice(invJson);
-
-            await SendProgress(channel, "SEMANTIC_MATCHING", 60, "Đang so khớp danh pháp bằng Vector Embeddings...");
-
-            // Chuẩn bị dữ liệu lịch sử hóa đơn để check trùng
-            var historicalInvoices = new List<Invoice>();
-            if (folderName.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            po = JsonSerializer.Deserialize<PurchaseOrder>(await System.IO.File.ReadAllTextAsync(poFile), options) ?? new();
+            grn = JsonSerializer.Deserialize<GoodsReceipt>(await System.IO.File.ReadAllTextAsync(grnFile), options) ?? new();
+            invoice = JsonSerializer.Deserialize<Invoice>(await System.IO.File.ReadAllTextAsync(invFile), options) ?? new();
+        }
+        catch (JsonException ex)
+        {
+            return BadRequest(new ProblemDetails
             {
-                historicalInvoices.Add(new Invoice
-                {
-                    Id = Guid.NewGuid(),
-                    InvoiceNumber = inv.InvoiceNumber,
-                    VendorTaxCode = inv.VendorTaxCode,
-                    InvoiceDate = new DateOnly(2026, 10, 15),
-                    TotalPayable = inv.TotalPayable,
-                    PaymentStatus = "PAID"
-                });
-            }
+                Title = "Lỗi định dạng JSON kịch bản",
+                Detail = ex.Message,
+                Status = StatusCodes.Status400BadRequest
+            });
+        }
 
-            // Đọc thêm từ DB nếu có
-            try
-            {
-                var dbHistory = await _dbContext.Invoices
-                    .Where(i => i.VendorTaxCode == inv.VendorTaxCode && i.PaymentStatus == "PAID")
-                    .ToListAsync();
-                historicalInvoices.AddRange(dbHistory);
-            }
-            catch { }
+        var sessionId = Guid.NewGuid();
+        var channel = clientSessionId ?? sessionId.ToString();
 
-            await SendProgress(channel, "VERIFICATION", 85, "Đang kiểm tra 3 chiều số lượng, đơn giá và thuế...");
+        await SendProgress(channel, "Ingestion", 20, "Đang nạp chứng từ và đối soát 3 chiều...");
 
-            var result = await _auditEngine.ExecuteAuditAsync(po, grn, inv, historicalInvoices);
-            _sessionCache[result.Id] = result;
-
-            // Lưu phiên đối soát vào CSDL
-            try
-            {
-                var auditEntity = new AuditSession
-                {
-                    Id = result.Id,
-                    SessionCode = result.SessionCode,
-                    Status = Enum.Parse<AuditStatus>(result.Status, true),
-                    DiscrepancyCount = result.DiscrepancyCount,
-                    TotalFinancialDiff = result.TotalFinancialDiff,
-                    Notes = $"Chạy từ kịch bản {folderName}"
-                };
-
-                foreach (var d in result.Discrepancies)
-                {
-                    auditEntity.Discrepancies.Add(new AuditDiscrepancy
-                    {
-                        Id = d.Id,
-                        SessionId = result.Id,
-                        DiscrepancyType = Enum.Parse<DiscrepancyType>(d.DiscrepancyType, true),
-                        Severity = Enum.Parse<DiscrepancySeverity>(d.Severity, true),
-                        ItemName = d.ItemName,
-                        ExpectedValue = d.ExpectedValue,
-                        ActualValue = d.ActualValue,
-                        FinancialImpact = d.FinancialImpact,
-                        Description = d.Description
-                    });
-                }
-
-                _dbContext.AuditSessions.Add(auditEntity);
-                await _dbContext.SaveChangesAsync();
-            }
-            catch { }
-
-            await SendProgress(channel, "COMPLETED", 100, $"Đối soát hoàn tất! Kết quả: {result.Status}");
-            return Ok(result);
+        // Tra cứu hóa đơn lịch sử qua EF Core
+        List<Invoice> dbHistory = new();
+        try
+        {
+            dbHistory = await _dbContext.Invoices
+                .Where(i => i.VendorTaxCode == invoice.VendorTaxCode)
+                .ToListAsync();
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = $"Lỗi xử lý kịch bản: {ex.Message}" });
+            _logger.LogWarning(ex, "Không thể đọc lịch sử hóa đơn từ CSDL.");
         }
+
+        await SendProgress(channel, "Reconciliation", 60, "Đang so khớp thực thể và kiểm tra rủi ro tài chính...");
+
+        var result = await _auditEngine.ExecuteAuditAsync(po, grn, invoice, dbHistory);
+        result.Id = sessionId;
+        result.SessionCode = "SES-" + sessionId.ToString()[..8].ToUpper();
+
+        await SendProgress(channel, "Persistence", 85, "Đang lưu trữ hồ sơ kiểm toán vào CSDL...");
+
+        // Lưu bền vững vào CSDL PostgreSQL
+        try
+        {
+            if (po.Id == Guid.Empty) po.Id = Guid.NewGuid();
+            if (grn.Id == Guid.Empty) grn.Id = Guid.NewGuid();
+            if (invoice.Id == Guid.Empty) invoice.Id = Guid.NewGuid();
+
+            _dbContext.PurchaseOrders.Add(po);
+            _dbContext.GoodsReceipts.Add(grn);
+            _dbContext.Invoices.Add(invoice);
+
+            var auditEntity = new AuditSession
+            {
+                Id = sessionId,
+                SessionCode = result.SessionCode,
+                InvoiceId = invoice.Id,
+                PoId = po.Id,
+                GrnId = grn.Id,
+                Status = Enum.TryParse<AuditStatus>(result.Status, out var st) ? st : AuditStatus.Pending,
+                TotalFinancialDiff = result.TotalFinancialDiff,
+                DiscrepancyCount = result.Discrepancies.Count,
+                Notes = $"COMPLETED: Đối soát hoàn tất lúc {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC",
+                CreatedAt = DateTime.UtcNow,
+                Discrepancies = result.Discrepancies.Select(d => new AuditDiscrepancy
+                {
+                    SessionId = sessionId,
+                    DiscrepancyType = Enum.TryParse<DiscrepancyType>(d.DiscrepancyType, out var dt) ? dt : DiscrepancyType.PriceMismatch,
+                    Severity = Enum.TryParse<DiscrepancySeverity>(d.Severity, out var ds) ? ds : DiscrepancySeverity.Critical,
+                    ItemName = d.ItemName,
+                    Description = d.Description,
+                    ExpectedValue = d.ExpectedValue,
+                    ActualValue = d.ActualValue,
+                    FinancialImpact = d.FinancialImpact,
+                    CreatedAt = DateTime.UtcNow
+                }).ToList()
+            };
+
+            _dbContext.AuditSessions.Add(auditEntity);
+            await _dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi lưu kết quả đối soát vào CSDL.");
+            // Không nuốt lỗi âm thầm nếu DB có sự cố
+        }
+
+        await SendProgress(channel, "Completed", 100, "Hoàn tất đối soát!");
+        return Ok(result);
     }
 
     /// <summary>
-    /// Endpoint tải lên 3 file chứng từ thực tế (PO, Phiếu kho, Hóa đơn)
+    /// Tải lên 3 file chứng từ để xử lý bất đồng bộ qua Channel Worker
     /// </summary>
-    [HttpPost("sessions/upload")]
-    public async Task<ActionResult<AuditSessionDto>> UploadAndAudit(
-        [FromForm] IFormFile poFile,
-        [FromForm] IFormFile grnFile,
-        [FromForm] IFormFile invoiceFile,
-        [FromForm] string? clientSessionId = null)
+    [HttpPost("sessions/upload-async")]
+    public async Task<IActionResult> UploadAndAuditAsync(
+        IFormFile poFile, 
+        IFormFile grnFile, 
+        IFormFile invoiceFile, 
+        [FromQuery] string? clientSessionId = null)
     {
+        // 1. Kiểm tra sự tồn tại của 3 tệp
         if (poFile == null || grnFile == null || invoiceFile == null)
         {
-            return BadRequest(new { error = "Yêu cầu tải lên đủ 3 tệp: Đơn đặt hàng (PO), Phiếu giao kho (GRN) và Hóa đơn (Invoice)." });
+            return BadRequest(new ProblemDetails
+            {
+                Title = "Thiếu tệp tin tải lên",
+                Detail = "Vui lòng cung cấp đủ cả 3 tệp tin: poFile (Đơn đặt hàng), grnFile (Phiếu nhập kho) và invoiceFile (Hóa đơn).",
+                Status = StatusCodes.Status400BadRequest
+            });
         }
 
-        var channel = clientSessionId ?? Guid.NewGuid().ToString();
-        await SendProgress(channel, "INGESTION", 25, "Đang tải lên và trích xuất dữ liệu từ các file...");
+        // 2. Kiểm tra định dạng và kích thước an toàn
+        var files = new[] { (poFile, "PO"), (grnFile, "GRN"), (invoiceFile, "Invoice") };
+        foreach (var (f, label) in files)
+        {
+            var ext = Path.GetExtension(f.FileName).ToLowerInvariant();
+            if (!AllowedExtensions.Contains(ext))
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = $"Định dạng tệp {label} không hợp lệ",
+                    Detail = $"Tệp '{f.FileName}' có định dạng không được hỗ trợ. Chỉ chấp nhận các định dạng: {string.Join(", ", AllowedExtensions)}.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
 
+            if (f.Length > MaxFileSize)
+            {
+                return BadRequest(new ProblemDetails
+                {
+                    Title = $"Dung lượng tệp {label} vượt quá giới hạn",
+                    Detail = $"Tệp '{f.FileName}' có dung lượng ({f.Length / (1024 * 1024)}MB) vượt quá giới hạn tối đa 20MB.",
+                    Status = StatusCodes.Status400BadRequest
+                });
+            }
+        }
+
+        var sessionId = Guid.NewGuid();
+
+        // 3. Khởi tạo bản ghi PENDING trong CSDL ngay lập tức
         try
         {
-            using var poStream = new StreamReader(poFile.OpenReadStream());
-            using var grnStream = new StreamReader(grnFile.OpenReadStream());
-            using var invStream = new StreamReader(invoiceFile.OpenReadStream());
-
-            var poContent = await poStream.ReadToEndAsync();
-            var grnContent = await grnStream.ReadToEndAsync();
-            var invContent = await invStream.ReadToEndAsync();
-
-            var po = SafeParsePo(poContent);
-            var grn = SafeParseGrn(grnContent);
-            var inv = SafeParseInvoice(invContent);
-
-            await SendProgress(channel, "MATCHING", 60, "Đang so khớp danh pháp sản phẩm...");
-
-            var historical = new List<Invoice>();
-            try
+            var auditSession = new AuditSession
             {
-                historical = await _dbContext.Invoices.Where(i => i.VendorTaxCode == inv.VendorTaxCode).ToListAsync();
-            }
-            catch { }
-
-            await SendProgress(channel, "VERIFICATION", 90, "Đang kiểm tra đối soát 3 chiều...");
-            var result = await _auditEngine.ExecuteAuditAsync(po, grn, inv, historical);
-            _sessionCache[result.Id] = result;
-
-            await SendProgress(channel, "COMPLETED", 100, $"Hoàn thành kiểm toán! Trạng thái: {result.Status}");
-            return Ok(result);
+                Id = sessionId,
+                SessionCode = "SES-" + sessionId.ToString()[..8].ToUpper(),
+                Status = AuditStatus.Pending,
+                Notes = "QUEUED: Đang chờ xử lý trong hàng đợi Channel.",
+                CreatedAt = DateTime.UtcNow
+            };
+            _dbContext.AuditSessions.Add(auditSession);
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            return BadRequest(new { error = $"Lỗi bóc tách file: {ex.Message}" });
+            _logger.LogWarning(ex, "Không thể tạo trước bản ghi PENDING trong CSDL cho SessionId {SessionId}", sessionId);
         }
+
+        // 4. Lưu tệp an toàn vào thư mục tạm có GUID cách ly (chống Path Traversal)
+        var tempDir = Path.Combine(Path.GetTempPath(), "AuditGuard", sessionId.ToString());
+        Directory.CreateDirectory(tempDir);
+
+        var poExt = Path.GetExtension(poFile.FileName);
+        var grnExt = Path.GetExtension(grnFile.FileName);
+        var invExt = Path.GetExtension(invoiceFile.FileName);
+
+        var poPath = Path.Combine(tempDir, $"po_{Path.GetRandomFileName()}{poExt}");
+        var grnPath = Path.Combine(tempDir, $"grn_{Path.GetRandomFileName()}{grnExt}");
+        var invPath = Path.Combine(tempDir, $"inv_{Path.GetRandomFileName()}{invExt}");
+
+        await using (var fs = System.IO.File.Create(poPath)) await poFile.CopyToAsync(fs);
+        await using (var fs = System.IO.File.Create(grnPath)) await grnFile.CopyToAsync(fs);
+        await using (var fs = System.IO.File.Create(invPath)) await invoiceFile.CopyToAsync(fs);
+
+        // 5. Đẩy vào hàng đợi Channel
+        var job = new AuditBackgroundJob
+        {
+            SessionId = sessionId,
+            ClientSessionId = clientSessionId,
+            PoFilePath = poPath,
+            GrnFilePath = grnPath,
+            InvoiceFilePath = invPath
+        };
+
+        await _taskQueue.EnqueueAsync(job);
+
+        return Accepted(new
+        {
+            SessionId = sessionId,
+            Status = "QUEUED",
+            Message = "3 tệp chứng từ đã được nạp và đưa vào hàng đợi đối soát bất đồng bộ thành công."
+        });
     }
 
-    [HttpGet("sessions/{id:guid}")]
+    /// <summary>
+    /// Lấy chi tiết phiên đối soát theo ID (ưu tiên đọc từ CSDL PostgreSQL qua EF Core)
+    /// </summary>
+    [HttpGet("sessions/{id}")]
     public async Task<ActionResult<AuditSessionDto>> GetSession(Guid id)
     {
-        if (_sessionCache.TryGetValue(id, out var session))
-        {
-            return Ok(session);
-        }
-
         try
         {
             var dbSession = await _dbContext.AuditSessions
                 .Include(s => s.Discrepancies)
+                .Include(s => s.PurchaseOrder)
+                .Include(s => s.GoodsReceipt)
+                .Include(s => s.Invoice)
                 .FirstOrDefaultAsync(s => s.Id == id);
 
             if (dbSession != null)
@@ -262,8 +401,12 @@ public class AuditController : ControllerBase
                     Id = dbSession.Id,
                     SessionCode = dbSession.SessionCode,
                     Status = dbSession.Status.ToString().ToUpper(),
-                    DiscrepancyCount = dbSession.DiscrepancyCount,
                     TotalFinancialDiff = dbSession.TotalFinancialDiff,
+                    DiscrepancyCount = dbSession.DiscrepancyCount,
+                    PoNumber = dbSession.PurchaseOrder?.PoNumber ?? "",
+                    GrnNumber = dbSession.GoodsReceipt?.GrnNumber ?? "",
+                    InvoiceNumber = dbSession.Invoice?.InvoiceNumber ?? "",
+                    VendorName = dbSession.Invoice?.VendorName ?? "",
                     CreatedAt = dbSession.CreatedAt,
                     Discrepancies = dbSession.Discrepancies.Select(d => new AuditDiscrepancyDto
                     {
@@ -271,134 +414,52 @@ public class AuditController : ControllerBase
                         DiscrepancyType = d.DiscrepancyType.ToString(),
                         Severity = d.Severity.ToString(),
                         ItemName = d.ItemName,
+                        Description = d.Description,
                         ExpectedValue = d.ExpectedValue,
                         ActualValue = d.ActualValue,
-                        FinancialImpact = d.FinancialImpact,
-                        Description = d.Description
+                        FinancialImpact = d.FinancialImpact
                     }).ToList()
                 });
             }
         }
-        catch { }
-
-        return NotFound(new { error = "Không tìm thấy phiên kiểm toán." });
-    }
-
-    [HttpPost("sessions/{id:guid}/email")]
-    public ActionResult<DisputeEmailDto> GenerateDisputeEmail(Guid id)
-    {
-        if (!_sessionCache.TryGetValue(id, out var session))
+        catch (Exception ex)
         {
-            return NotFound(new { error = "Không tìm thấy phiên kiểm toán." });
+            _logger.LogError(ex, "Lỗi khi truy vấn phiên đối soát {Id} từ CSDL", id);
+            return StatusCode(StatusCodes.Status500InternalServerError, new ProblemDetails
+            {
+                Title = "Lỗi truy vấn CSDL",
+                Detail = ex.Message,
+                Status = StatusCodes.Status500InternalServerError
+            });
         }
 
+        return NotFound(new ProblemDetails
+        {
+            Title = "Không tìm thấy phiên kiểm toán",
+            Detail = $"Không tìm thấy phiên kiểm toán với ID {id} trong CSDL.",
+            Status = StatusCodes.Status404NotFound
+        });
+    }
+
+    /// <summary>
+    /// Sinh nội dung email khiếu nại nhà cung cấp tự động
+    /// </summary>
+    [HttpPost("sessions/{id}/email")]
+    public async Task<ActionResult<DisputeEmailDto>> GenerateDisputeEmail(Guid id)
+    {
+        var sessionResult = await GetSession(id);
+        if (sessionResult.Result is NotFoundObjectResult || sessionResult.Value == null)
+        {
+            return NotFound("Không tìm thấy phiên kiểm toán để tạo email khiếu nại.");
+        }
+
+        var session = sessionResult.Value;
         var email = _emailService.GenerateDisputeEmail(session);
         return Ok(email);
     }
 
     private async Task SendProgress(string channel, string stage, int percent, string message)
     {
-        try
-        {
-            // Gửi cả về Group riêng của session và Broadcast phòng trường hợp demo 1 user
-            await _hubContext.Clients.Group(channel).SendAsync("ReceiveProgress", stage, percent, message);
-            await _hubContext.Clients.All.SendAsync("ReceiveProgress", stage, percent, message);
-        }
-        catch { }
-    }
-
-    // --- CÁC HÀM PARSER AN TOÀN TRÁNH CRASH 500 ---
-    private static PurchaseOrder SafeParsePo(string json)
-    {
-        using var doc = JsonDocument.Parse(json);
-        var r = doc.RootElement;
-        var po = new PurchaseOrder
-        {
-            PoNumber = r.TryGetProperty("po_number", out var p) ? p.GetString() ?? "PO-UNKNOWN" : "PO-UNKNOWN",
-            OrderDate = r.TryGetProperty("order_date", out var od) && DateOnly.TryParse(od.GetString(), out var d) ? d : DateOnly.FromDateTime(DateTime.UtcNow),
-            Subtotal = r.TryGetProperty("subtotal", out var sub) ? sub.GetDecimal() : 0m,
-            TaxAmount = r.TryGetProperty("tax_amount", out var ta) ? ta.GetDecimal() : 0m,
-            TotalAmount = r.TryGetProperty("total_amount", out var tot) ? tot.GetDecimal() : 0m,
-            Vendor = new Vendor
-            {
-                Name = r.TryGetProperty("vendor", out var v) && v.TryGetProperty("name", out var vn) ? vn.GetString() ?? "" : "",
-                TaxCode = r.TryGetProperty("vendor", out var v2) && v2.TryGetProperty("tax_code", out var vtc) ? vtc.GetString() ?? "" : ""
-            }
-        };
-
-        if (r.TryGetProperty("items", out var items) && items.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var i in items.EnumerateArray())
-            {
-                po.Items.Add(new POItem
-                {
-                    LineNumber = i.TryGetProperty("line_number", out var ln) ? ln.GetInt32() : 1,
-                    ItemName = i.TryGetProperty("item_name", out var iname) ? iname.GetString() ?? "" : "",
-                    Quantity = i.TryGetProperty("quantity", out var q) ? q.GetDecimal() : 1m,
-                    UnitPrice = i.TryGetProperty("unit_price", out var up) ? up.GetDecimal() : 0m,
-                    TotalPrice = i.TryGetProperty("total_price", out var tp) ? tp.GetDecimal() : 0m
-                });
-            }
-        }
-        return po;
-    }
-
-    private static GoodsReceipt SafeParseGrn(string json)
-    {
-        using var doc = JsonDocument.Parse(json);
-        var r = doc.RootElement;
-        var grn = new GoodsReceipt
-        {
-            GrnNumber = r.TryGetProperty("grn_number", out var g) ? g.GetString() ?? "GRN-UNKNOWN" : "GRN-UNKNOWN",
-            ReceivedDate = r.TryGetProperty("received_date", out var rd) && DateOnly.TryParse(rd.GetString(), out var d) ? d : DateOnly.FromDateTime(DateTime.UtcNow),
-            WarehouseKeeper = r.TryGetProperty("warehouse_keeper", out var wk) ? wk.GetString() : ""
-        };
-
-        if (r.TryGetProperty("items", out var items) && items.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var i in items.EnumerateArray())
-            {
-                grn.Items.Add(new GRItem
-                {
-                    ItemName = i.TryGetProperty("item_name", out var iname) ? iname.GetString() ?? "" : "",
-                    QuantityReceived = i.TryGetProperty("quantity_received", out var qr) ? qr.GetDecimal() : 0m
-                });
-            }
-        }
-        return grn;
-    }
-
-    private static Invoice SafeParseInvoice(string json)
-    {
-        using var doc = JsonDocument.Parse(json);
-        var r = doc.RootElement;
-        var inv = new Invoice
-        {
-            InvoiceNumber = r.TryGetProperty("invoice_number", out var invNo) ? invNo.GetString() ?? "INV-UNKNOWN" : "INV-UNKNOWN",
-            InvoiceSeries = r.TryGetProperty("invoice_series", out var s) ? s.GetString() : "",
-            InvoiceDate = r.TryGetProperty("invoice_date", out var idate) && DateOnly.TryParse(idate.GetString(), out var d) ? d : DateOnly.FromDateTime(DateTime.UtcNow),
-            VendorName = r.TryGetProperty("vendor_name", out var vn) ? vn.GetString() : "",
-            VendorTaxCode = r.TryGetProperty("vendor_tax_code", out var vtc) ? vtc.GetString() ?? "" : "",
-            Subtotal = r.TryGetProperty("subtotal", out var sub) ? sub.GetDecimal() : 0m,
-            TaxRate = r.TryGetProperty("tax_rate", out var tr) ? tr.GetDecimal() : 8.0m,
-            TaxAmount = r.TryGetProperty("tax_amount", out var ta) ? ta.GetDecimal() : 0m,
-            TotalPayable = r.TryGetProperty("total_payable", out var tp) ? tp.GetDecimal() : 0m
-        };
-
-        if (r.TryGetProperty("items", out var items) && items.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var i in items.EnumerateArray())
-            {
-                inv.Items.Add(new InvoiceItem
-                {
-                    LineNumber = i.TryGetProperty("line_number", out var ln) ? ln.GetInt32() : 1,
-                    ItemName = i.TryGetProperty("item_name", out var iname) ? iname.GetString() ?? "" : "",
-                    Quantity = i.TryGetProperty("quantity", out var q) ? q.GetDecimal() : 1m,
-                    UnitPrice = i.TryGetProperty("unit_price", out var up) ? up.GetDecimal() : 0m,
-                    TotalAmount = i.TryGetProperty("total_amount", out var tot) ? tot.GetDecimal() : 0m
-                });
-            }
-        }
-        return inv;
+        await _hubContext.Clients.Group(channel).SendAsync("ReceiveProgress", stage, percent, message);
     }
 }

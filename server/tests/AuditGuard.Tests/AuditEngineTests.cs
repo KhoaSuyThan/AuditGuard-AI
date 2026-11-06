@@ -37,6 +37,22 @@ public class MockAiClient : IAiEngineClient
         }
         return Task.FromResult(rows);
     }
+
+    public Task<Invoice> ExtractInvoiceAsync(System.IO.Stream fileStream, string fileName)
+    {
+        return Task.FromResult(new Invoice { InvoiceNumber = "INV-MOCK" });
+    }
+
+    public Task<PurchaseOrder> ExtractPurchaseOrderAsync(System.IO.Stream fileStream, string fileName)
+    {
+        return Task.FromResult(new PurchaseOrder { PoNumber = "PO-MOCK" });
+    }
+
+    public Task<GoodsReceipt> ExtractGoodsReceiptAsync(System.IO.Stream fileStream, string fileName)
+    {
+        return Task.FromResult(new GoodsReceipt { GrnNumber = "GRN-MOCK" });
+    }
+
 }
 
 public class AuditEngineTests

@@ -3,7 +3,7 @@
 AuditGuard AI Engine - FastAPI Microservice
 Đã chuẩn hóa Exception Handling không ghi đè lỗi 400/422/503 thành 500
 """
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
@@ -61,9 +61,12 @@ async def health_check():
 
 
 @app.post("/api/ai/extract-document")
-async def extract_document(file: UploadFile = File(...)):
+async def extract_document(
+    file: UploadFile = File(...),
+    document_type: str = Form("INVOICE")
+):
     """
-    Tiếp nhận file PDF (cả digital và scan) hoặc file ảnh (JPG, PNG):
+    Tiếp nhận file PDF hoặc ảnh (JPG, PNG) và bóc tách theo đúng loại chứng từ: PO, GRN hoặc INVOICE
     Bắt lỗi chuẩn xác:
     - 400: Định dạng không hỗ trợ hoặc file rỗng
     - 503: Không kết nối được Ollama
@@ -76,9 +79,10 @@ async def extract_document(file: UploadFile = File(...)):
         if not raw_text.strip():
             raise HTTPException(status_code=400, detail="Không thể trích xuất văn bản từ tệp tin đã cung cấp.")
 
-        extracted_data = await extractor.extract_invoice_data(raw_text)
+        extracted_data = await extractor.extract_document_data(raw_text, document_type)
         return {
             "filename": file.filename,
+            "document_type": document_type.upper(),
             "raw_text_preview": raw_text[:500] + ("..." if len(raw_text) > 500 else ""),
             "data": extracted_data
         }
