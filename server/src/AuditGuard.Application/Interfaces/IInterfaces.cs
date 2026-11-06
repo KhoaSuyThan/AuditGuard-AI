@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using AuditGuard.Application.DTOs;
 using AuditGuard.Domain.Entities;
@@ -31,4 +32,8 @@ public interface IAiEngineClient
         ICollection<POItem> poItems,
         ICollection<InvoiceItem> invoiceItems,
         ICollection<GRItem> grItems);
+
+    Task<Invoice> ExtractInvoiceAsync(Stream fileStream, string fileName);
+    Task<PurchaseOrder> ExtractPurchaseOrderAsync(Stream fileStream, string fileName);
+    Task<GoodsReceipt> ExtractGoodsReceiptAsync(Stream fileStream, string fileName);
 }
