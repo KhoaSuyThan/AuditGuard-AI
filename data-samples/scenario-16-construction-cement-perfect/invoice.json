@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-008920",
+  "invoice_series": "1C26XM",
+  "invoice_date": "2026-11-03",
+  "vendor_tax_code": "0304411223",
+  "vendor_name": "NHÀ PHÂN PHỐI XI MĂNG MIỀN NAM",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Xi măng PCB40 INSEE",
+      "quantity": 500,
+      "unit": "bao",
+      "unit_price": 92000,
+      "total_amount": 46000000
+    }
+  ],
+  "subtotal": 46000000,
+  "tax_rate": 8.0,
+  "tax_amount": 3680000,
+  "total_payable": 49680000
+}

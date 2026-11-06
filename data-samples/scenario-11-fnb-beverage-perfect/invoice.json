@@ -1,0 +1,29 @@
+{
+  "invoice_number": "HD-002341",
+  "invoice_series": "1C26NB",
+  "invoice_date": "2026-11-03",
+  "vendor_tax_code": "5801234567",
+  "vendor_name": "NHÀ MÁY NÔNG SẢN NGUYÊN BẢN ĐÀ LẠT",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Cà phê hạt Arabica Cầu Đất rang",
+      "quantity": 100,
+      "unit": "kg",
+      "unit_price": 220000,
+      "total_amount": 22000000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Siro Monin hạt dẻ 700ml",
+      "quantity": 24,
+      "unit": "chai",
+      "unit_price": 250000,
+      "total_amount": 6000000
+    }
+  ],
+  "subtotal": 28000000,
+  "tax_rate": 8.0,
+  "tax_amount": 2240000,
+  "total_payable": 30240000
+}

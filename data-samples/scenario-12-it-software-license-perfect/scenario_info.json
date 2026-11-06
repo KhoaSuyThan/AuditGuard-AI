@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_12",
+  "name": "Bản quyền Phần mềm Cloud & Dev Tool - Khớp 100%",
+  "description": "Mua license JetBrains All Products Pack và GitHub Enterprise Cloud 20 seats. Khớp 100% thuế phần mềm 0%.",
+  "expected_result": "PASSED",
+  "expected_discrepancies": 0,
+  "financial_impact_vnd": 0
+}

@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-303",
+  "order_date": "2026-11-04",
+  "vendor": {
+    "name": "CÔNG TY CỔ PHẦN THỰC PHẨM SẠCH MEAT WORLD",
+    "tax_code": "0317894561",
+    "address": "88 Bến Vân Đồn, Quận 4, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Thịt Thăn Bò Úc Cắt Lát Đông Lạnh",
+      "quantity": 50,
+      "unit": "kg",
+      "unit_price": 350000,
+      "total_price": 17500000
+    }
+  ],
+  "subtotal": 17500000,
+  "tax_rate": 8.0,
+  "tax_amount": 1400000,
+  "total_amount": 18900000
+}

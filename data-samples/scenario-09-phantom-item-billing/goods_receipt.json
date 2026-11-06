@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-305",
+  "po_number": "PO-2026-305",
+  "received_date": "2026-11-04",
+  "warehouse_keeper": "Ngô Cơ Khí",
+  "items": [
+    {
+      "item_name": "Khung sắt tĩnh điện",
+      "quantity_received": 4,
+      "unit": "bộ",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nhận đủ 4 khung."
+}

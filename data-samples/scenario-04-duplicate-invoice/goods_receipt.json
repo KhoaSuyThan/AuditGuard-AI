@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-210",
+  "po_number": "PO-2026-210",
+  "received_date": "2026-11-05",
+  "warehouse_keeper": "Nguyễn Văn Kho",
+  "items": [
+    {
+      "item_name": "Biên bản nghiệm thu dịch vụ vận chuyển đợt 1",
+      "quantity_received": 1,
+      "unit": "gói",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Đã nghiệm thu dịch vụ."
+}

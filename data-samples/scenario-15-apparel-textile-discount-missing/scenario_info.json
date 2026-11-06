@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_15",
+  "name": "Dệt may - Bỏ quên Chiết khấu Thương mại 5%",
+  "description": "PO thỏa thuận chiết khấu 5% khi mua trên 1.000m vải lụa tơ tằm. Hóa đơn quên trừ chiết khấu, gây thiệt hại 4.320.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 4320000
+}

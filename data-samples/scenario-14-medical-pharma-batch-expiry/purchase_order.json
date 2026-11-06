@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-310",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "CÔNG TY DƯỢC PHẨM TRUNG ƯƠNG PHARCO",
+    "tax_code": "0101133557",
+    "address": "35 Tràng Thi, Hoàn Kiếm, Hà Nội"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Thuốc kháng sinh Augmentin 1g (Hộp 14 viên)",
+      "quantity": 200,
+      "unit": "hộp",
+      "unit_price": 185000,
+      "total_price": 37000000
+    }
+  ],
+  "subtotal": 37000000,
+  "tax_rate": 5.0,
+  "tax_amount": 1850000,
+  "total_amount": 38850000
+}

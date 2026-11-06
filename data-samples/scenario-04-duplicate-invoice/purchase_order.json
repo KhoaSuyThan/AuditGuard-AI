@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-210",
+  "order_date": "2026-11-04",
+  "vendor": {
+    "name": "CÔNG TY DỊCH VỤ VẬN TẢI TỐC HÀNH",
+    "tax_code": "0311223344",
+    "address": "15 Xô Viết Nghệ Tĩnh, Bình Thạnh, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Phí dịch vụ vận chuyển kho bãi tháng 11/2026",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 15000000,
+      "total_price": 15000000
+    }
+  ],
+  "subtotal": 15000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1200000,
+  "total_amount": 16200000
+}

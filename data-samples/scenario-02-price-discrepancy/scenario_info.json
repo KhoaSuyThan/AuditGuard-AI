@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_02",
+  "name": "Sai lệch Đơn giá (Price Discrepancy)",
+  "description": "Nhà cung cấp tự ý xuất hóa đơn với đơn giá cao hơn thỏa thuận hợp đồng (+20%), gây thất thoát 756.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 756000
+}

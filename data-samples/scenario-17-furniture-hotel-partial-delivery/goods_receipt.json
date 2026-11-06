@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-313-P1",
+  "po_number": "PO-2026-313",
+  "received_date": "2026-11-04",
+  "warehouse_keeper": "Quản lý Dự án Hotel",
+  "items": [
+    {
+      "item_name": "Bàn ghế khách sạn An Cường (Đợt 1)",
+      "quantity_received": 35,
+      "unit": "bộ",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nghiệm thu bàn giao đợt 1 cho tầng 3 và tầng 4 (35 bộ)."
+}

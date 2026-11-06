@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-009944",
+  "invoice_series": "1C26DG",
+  "invoice_date": "2026-11-02",
+  "vendor_tax_code": "0318877665",
+  "vendor_name": "CÔNG TY TNHH QUẢNG CÁO SỐ DIGI-GROWTH",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Chi phí chạy Ads & Phí quản lý chiến dịch tháng 10",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 65000000,
+      "total_amount": 65000000
+    }
+  ],
+  "subtotal": 65000000,
+  "tax_rate": 8.0,
+  "tax_amount": 5200000,
+  "total_payable": 70200000
+}

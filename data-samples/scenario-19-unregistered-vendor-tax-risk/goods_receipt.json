@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-315",
+  "po_number": "PO-2026-315",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Kỹ thuật Tòa nhà",
+  "items": [
+    {
+      "item_name": "Biên bản bảo trì máy lạnh",
+      "quantity_received": 1,
+      "unit": "gói",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Bảo dưỡng 12 điều hòa."
+}

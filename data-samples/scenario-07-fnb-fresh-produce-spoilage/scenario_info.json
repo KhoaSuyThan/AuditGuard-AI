@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_07",
+  "name": "F&B - Hàng hỏng bị trả lại nhưng hóa đơn vẫn tính tiền",
+  "description": "Kho bếp nhà hàng trả lại 10kg Thịt bò Úc do rách túi chân không ôi thiu. Hóa đơn vẫn tính tiền đủ 50kg, chênh lệch 3.780.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 3780000
+}

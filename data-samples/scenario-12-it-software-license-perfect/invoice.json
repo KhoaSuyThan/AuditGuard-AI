@@ -1,0 +1,29 @@
+{
+  "invoice_number": "HD-007712",
+  "invoice_series": "1C26SV",
+  "invoice_date": "2026-11-02",
+  "vendor_tax_code": "0108899776",
+  "vendor_name": "CÔNG TY PHÂN PHỐI PHẦN MỀM SOFTVIET",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Phần mềm JetBrains All Products Pack",
+      "quantity": 5,
+      "unit": "user",
+      "unit_price": 12500000,
+      "total_amount": 62500000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Dịch vụ phần mềm GitHub Enterprise Cloud",
+      "quantity": 20,
+      "unit": "seat",
+      "unit_price": 5500000,
+      "total_amount": 110000000
+    }
+  ],
+  "subtotal": 172500000,
+  "tax_rate": 0.0,
+  "tax_amount": 0,
+  "total_payable": 172500000
+}

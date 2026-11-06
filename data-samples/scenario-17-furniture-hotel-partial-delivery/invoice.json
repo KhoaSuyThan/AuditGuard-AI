@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-001552",
+  "invoice_series": "1C26AC",
+  "invoice_date": "2026-11-04",
+  "vendor_tax_code": "0303322114",
+  "vendor_name": "CÔNG TY NỘI THẤT GỖ AN CƯỜNG",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Bộ bàn ghế làm việc phòng khách sạn (Đợt 1: 35%)",
+      "quantity": 35,
+      "unit": "bộ",
+      "unit_price": 3200000,
+      "total_amount": 112000000
+    }
+  ],
+  "subtotal": 112000000,
+  "tax_rate": 8.0,
+  "tax_amount": 8960000,
+  "total_payable": 120960000
+}

@@ -1,0 +1,31 @@
+{
+  "po_number": "PO-2026-308",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "CÔNG TY PHÂN PHỐI PHẦN MỀM SOFTVIET",
+    "tax_code": "0108899776",
+    "address": "Tầng 5 Keangnam Landmark 72, Hà Nội"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Bản quyền JetBrains All Products Pack (Gói 1 năm)",
+      "quantity": 5,
+      "unit": "user",
+      "unit_price": 12500000,
+      "total_price": 62500000
+    },
+    {
+      "line_number": 2,
+      "item_name": "GitHub Enterprise Cloud Subscription (Gói 1 năm)",
+      "quantity": 20,
+      "unit": "seat",
+      "unit_price": 5500000,
+      "total_price": 110000000
+    }
+  ],
+  "subtotal": 172500000,
+  "tax_rate": 0.0,
+  "tax_amount": 0,
+  "total_amount": 172500000
+}

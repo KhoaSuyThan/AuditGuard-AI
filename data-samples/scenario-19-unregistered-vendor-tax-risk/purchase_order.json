@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-315",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "CÔNG TY TNHH THƯƠNG MẠI TỔNG HỢP VẠN PHÁT",
+    "tax_code": "0319999888",
+    "address": "99 Lũy Bán Bích, Tân Phú, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Dịch vụ bảo trì hệ thống điều hòa không khí",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 24000000,
+      "total_price": 24000000
+    }
+  ],
+  "subtotal": 24000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1920000,
+  "total_amount": 25920000
+}

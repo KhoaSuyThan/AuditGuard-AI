@@ -1,0 +1,31 @@
+{
+  "po_number": "PO-2026-001",
+  "order_date": "2026-11-01",
+  "vendor": {
+    "name": "CÔNG TY TNHH THIẾT BỊ VĂN PHÒNG VIỆT NHẬT",
+    "tax_code": "0314567890",
+    "address": "123 Nguyễn Thị Minh Khai, Quận 3, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Giấy in A4 Double A 70gsm",
+      "quantity": 50,
+      "unit": "ram",
+      "unit_price": 75000,
+      "total_price": 3750000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Bút bi Thiên Long TL-027 (Hộp 20 cây)",
+      "quantity": 10,
+      "unit": "hộp",
+      "unit_price": 80000,
+      "total_price": 800000
+    }
+  ],
+  "subtotal": 4550000,
+  "tax_rate": 8.0,
+  "tax_amount": 364000,
+  "total_amount": 4914000
+}

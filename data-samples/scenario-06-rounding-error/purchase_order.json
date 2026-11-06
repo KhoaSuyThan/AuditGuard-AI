@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-302",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "TẬP ĐOÀN THÉP ĐÔNG Á",
+    "tax_code": "0301122999",
+    "address": "KCN Sóng Thần, Bình Dương"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Thép cuộn D8 Hòa Phát CB240-T",
+      "quantity": 5000,
+      "unit": "kg",
+      "unit_price": 18000,
+      "total_price": 90000000
+    }
+  ],
+  "subtotal": 90000000,
+  "tax_rate": 8.0,
+  "tax_amount": 7200000,
+  "total_amount": 97200000
+}

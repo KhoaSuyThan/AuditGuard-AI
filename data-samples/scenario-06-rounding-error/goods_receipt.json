@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-302",
+  "po_number": "PO-2026-302",
+  "received_date": "2026-11-04",
+  "warehouse_keeper": "Kỹ sư Cầu Đường",
+  "items": [
+    {
+      "item_name": "Thép D8 Hòa Phát",
+      "quantity_received": 4880,
+      "unit": "kg",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Cân xe tải tổng trừ bì thực tế tại trạm cân công trường là 4.880kg (thiếu 120kg)."
+}

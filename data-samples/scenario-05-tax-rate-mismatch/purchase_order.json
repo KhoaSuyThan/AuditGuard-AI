@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-301",
+  "order_date": "2026-11-01",
+  "vendor": {
+    "name": "CÔNG TY ĐIỆN MÁY TÂN TIẾN",
+    "tax_code": "0316789123",
+    "address": "78 Hoàng Văn Thụ, Phú Nhuận, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Quạt thông gió công nghiệp Mitsubishi 25cm",
+      "quantity": 20,
+      "unit": "cái",
+      "unit_price": 2400000,
+      "total_price": 48000000
+    }
+  ],
+  "subtotal": 48000000,
+  "tax_rate": 8.0,
+  "tax_amount": 3840000,
+  "total_amount": 51840000
+}

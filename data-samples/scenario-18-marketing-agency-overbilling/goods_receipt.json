@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-314",
+  "po_number": "PO-2026-314",
+  "received_date": "2026-11-01",
+  "warehouse_keeper": "Marketing Director",
+  "items": [
+    {
+      "item_name": "Báo cáo nghiệm thu KPI chiến dịch",
+      "quantity_received": 1,
+      "unit": "gói",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Đạt KPI chuyển đổi, nhưng chi phí thực tế chưa được duyệt vượt trần."
+}

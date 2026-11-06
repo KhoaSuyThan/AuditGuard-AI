@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_06",
+  "name": "Sai số làm tròn & Cân đo tải trọng",
+  "description": "Thép cuộn xây dựng cân thực tế tại công trường lệch 120kg so với barem lý thuyết trên hóa đơn, chênh lệch 2.160.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 2160000
+}

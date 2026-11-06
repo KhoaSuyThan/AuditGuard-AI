@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-008129",
+  "invoice_series": "1C26AD",
+  "invoice_date": "2026-10-25",
+  "vendor_tax_code": "0309991112",
+  "vendor_name": "CÔNG TY TNHH TRUYỀN THÔNG VÀ SỰ KIỆN ÁNH DƯƠNG",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Dịch vụ cho thuê thiết bị âm thanh ánh sáng LED",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 20000000,
+      "total_amount": 20000000
+    }
+  ],
+  "subtotal": 20000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1600000,
+  "total_payable": 21600000
+}

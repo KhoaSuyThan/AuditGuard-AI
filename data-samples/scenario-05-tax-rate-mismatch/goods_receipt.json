@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-301",
+  "po_number": "PO-2026-301",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Hoàng Văn Kho",
+  "items": [
+    {
+      "item_name": "Quạt hút Mitsubishi EX-25",
+      "quantity_received": 20,
+      "unit": "cái",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nhận đủ 20 quạt."
+}

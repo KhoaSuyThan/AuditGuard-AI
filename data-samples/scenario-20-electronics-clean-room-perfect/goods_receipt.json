@@ -1,0 +1,21 @@
+{
+  "grn_number": "GRN-2026-316",
+  "po_number": "PO-2026-316",
+  "received_date": "2026-11-05",
+  "warehouse_keeper": "QA Phòng sạch",
+  "items": [
+    {
+      "item_name": "Găng tay Nitrile ESD Cleanroom M",
+      "quantity_received": 200,
+      "unit": "hộp",
+      "condition": "GOOD"
+    },
+    {
+      "item_name": "Khăn lau WIP-1009DLE",
+      "quantity_received": 50,
+      "unit": "gói",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Kiểm tra độ bụi đạt chuẩn Class 100."
+}

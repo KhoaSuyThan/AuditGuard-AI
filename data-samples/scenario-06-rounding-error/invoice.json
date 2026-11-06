@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-009981",
+  "invoice_series": "1C26DA",
+  "invoice_date": "2026-11-04",
+  "vendor_tax_code": "0301122999",
+  "vendor_name": "TẬP ĐOÀN THÉP ĐÔNG Á",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Thép cuộn xây dựng D8 Hòa Phát",
+      "quantity": 5000,
+      "unit": "kg",
+      "unit_price": 18000,
+      "total_amount": 90000000
+    }
+  ],
+  "subtotal": 90000000,
+  "tax_rate": 8.0,
+  "tax_amount": 7200000,
+  "total_payable": 97200000
+}

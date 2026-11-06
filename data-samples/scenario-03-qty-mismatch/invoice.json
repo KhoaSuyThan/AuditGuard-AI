@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-004455",
+  "invoice_series": "1C26SGT",
+  "invoice_date": "2026-11-05",
+  "vendor_tax_code": "0308889999",
+  "vendor_name": "NHÀ PHÂN PHỐI LINH KIỆN SÀI GÒN TECH",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Ổ cứng SSD Kingston 500GB NV2 NVMe",
+      "quantity": 50,
+      "unit": "cái",
+      "unit_price": 850000,
+      "total_amount": 42500000
+    }
+  ],
+  "subtotal": 42500000,
+  "tax_rate": 8.0,
+  "tax_amount": 3400000,
+  "total_payable": 45900000
+}

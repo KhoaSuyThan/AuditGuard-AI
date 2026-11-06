@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-312",
+  "po_number": "PO-2026-312",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Giám sát Công trường",
+  "items": [
+    {
+      "item_name": "Xi măng INSEE PCB40",
+      "quantity_received": 500,
+      "unit": "bao",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Xếp pallet 10 bao/lớp che bạt kín."
+}

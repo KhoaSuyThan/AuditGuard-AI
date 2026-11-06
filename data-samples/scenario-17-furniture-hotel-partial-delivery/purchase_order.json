@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-313",
+  "order_date": "2026-10-20",
+  "vendor": {
+    "name": "CÔNG TY NỘI THẤT GỖ AN CƯỜNG",
+    "tax_code": "0303322114",
+    "address": "Đường DT743, Thuận An, Bình Dương"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Bộ bàn ghế làm việc phòng khách sạn tiêu chuẩn",
+      "quantity": 100,
+      "unit": "bộ",
+      "unit_price": 3200000,
+      "total_price": 320000000
+    }
+  ],
+  "subtotal": 320000000,
+  "tax_rate": 8.0,
+  "tax_amount": 25600000,
+  "total_amount": 345600000
+}

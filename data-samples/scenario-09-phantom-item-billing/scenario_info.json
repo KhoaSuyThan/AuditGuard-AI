@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_09",
+  "name": "Kê khống phụ phí phát sinh ngoài PO",
+  "description": "Hóa đơn tự động chèn thêm 'Phí bốc xếp ngoài giờ' 1.500.000 VNĐ không có trong thỏa thuận Đơn đặt hàng.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 1620000
+}

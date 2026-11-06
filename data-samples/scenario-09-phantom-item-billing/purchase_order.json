@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-305",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "NHÀ XƯỞNG CƠ KHÍ CHÍNH XÁC PHÚ THỊNH",
+    "tax_code": "0314455667",
+    "address": "Khu chế xuất Tân Thuận, Quận 7, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Gia công khung sắt sơn tĩnh điện tiêu chuẩn",
+      "quantity": 4,
+      "unit": "bộ",
+      "unit_price": 4500000,
+      "total_price": 18000000
+    }
+  ],
+  "subtotal": 18000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1440000,
+  "total_amount": 19440000
+}

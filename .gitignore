@@ -1,0 +1,34 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Node.js / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# .NET / Backend
+bin/
+obj/
+*.user
+*.suo
+
+# Python / AI Engine
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+.pytest_cache/
+
+# Docker & Database local data
+pgdata/
+uploads/
+storage/
+
+# IDE & OS
+.idea/
+*.DS_Store
+Thumbs.db

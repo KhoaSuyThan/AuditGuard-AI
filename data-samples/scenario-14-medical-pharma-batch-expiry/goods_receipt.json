@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-310",
+  "po_number": "PO-2026-310",
+  "received_date": "2026-11-04",
+  "warehouse_keeper": "Dược sĩ Kho",
+  "items": [
+    {
+      "item_name": "Augmentin 1g (Lô B2608, HSD: 10/2028)",
+      "quantity_received": 200,
+      "unit": "hộp",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Thuốc nguyên vẹn, bảo quản nhiệt độ < 25 độ C."
+}

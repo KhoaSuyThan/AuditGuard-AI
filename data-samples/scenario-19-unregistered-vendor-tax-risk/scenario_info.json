@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_19",
+  "name": "Nhà cung cấp Rủi ro Cao (Doanh nghiệp ngưng hoạt động)",
+  "description": "Nhà cung cấp xuất hóa đơn có mã số thuế nằm trong danh sách đen cảnh báo rủi ro thuế (doanh nghiệp không hoạt động tại địa chỉ đăng ký).",
+  "expected_result": "REJECTED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 25920000
+}
