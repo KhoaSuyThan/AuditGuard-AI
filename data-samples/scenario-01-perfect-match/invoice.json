@@ -1,0 +1,29 @@
+{
+  "invoice_number": "HD-001248",
+  "invoice_series": "1C26TBB",
+  "invoice_date": "2026-11-03",
+  "vendor_tax_code": "0314567890",
+  "vendor_name": "CÔNG TY TNHH THIẾT BỊ VĂN PHÒNG VIỆT NHẬT",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Giấy A4 Double A 70g",
+      "quantity": 50,
+      "unit": "ram",
+      "unit_price": 75000,
+      "total_amount": 3750000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Bút bi TL-027 xanh (20c/hộp)",
+      "quantity": 10,
+      "unit": "hộp",
+      "unit_price": 80000,
+      "total_amount": 800000
+    }
+  ],
+  "subtotal": 4550000,
+  "tax_rate": 8.0,
+  "tax_amount": 364000,
+  "total_payable": 4914000
+}

@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-003311",
+  "invoice_series": "1C26MW",
+  "invoice_date": "2026-11-05",
+  "vendor_tax_code": "0317894561",
+  "vendor_name": "CÔNG TY CỔ PHẦN THỰC PHẨM SẠCH MEAT WORLD",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Thịt thăn bò Úc Striploin",
+      "quantity": 50,
+      "unit": "kg",
+      "unit_price": 350000,
+      "total_amount": 17500000
+    }
+  ],
+  "subtotal": 17500000,
+  "tax_rate": 8.0,
+  "tax_amount": 1400000,
+  "total_payable": 18900000
+}

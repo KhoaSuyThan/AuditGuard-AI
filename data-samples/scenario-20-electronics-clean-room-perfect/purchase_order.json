@@ -1,0 +1,31 @@
+{
+  "po_number": "PO-2026-316",
+  "order_date": "2026-11-03",
+  "vendor": {
+    "name": "CÔNG TY TNHH VẬT TƯ BẢO HỘ CÔNG NGHỆ CAO VIỆT HÀN",
+    "tax_code": "0315544332",
+    "address": "Khu công nghệ cao SHTP, Quận 9, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Găng tay Nitrile chống tĩnh điện ESD Cleanroom Size M",
+      "quantity": 200,
+      "unit": "hộp",
+      "unit_price": 140000,
+      "total_price": 28000000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Khăn lau phòng sạch không bụi WIP-1009DLE",
+      "quantity": 50,
+      "unit": "gói",
+      "unit_price": 110000,
+      "total_price": 5500000
+    }
+  ],
+  "subtotal": 33500000,
+  "tax_rate": 8.0,
+  "tax_amount": 2680000,
+  "total_amount": 36180000
+}

@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_08",
+  "name": "Nhầm lẫn Đơn vị tính Quy cách (Thùng vs Hộp)",
+  "description": "PO đặt 10 Thùng (mỗi thùng 50 hộp), hóa đơn xuất ghi 10 Hộp nhưng thành tiền vẫn tính giá theo 10 Thùng.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 0
+}

@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-004519",
+  "invoice_series": "1C26BL",
+  "invoice_date": "2026-11-03",
+  "vendor_tax_code": "5809871234",
+  "vendor_name": "XƯỞNG DỆT LỤA BẢO LỘC SILK",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Vải lụa tơ tằm khổ 1.5m",
+      "quantity": 1000,
+      "unit": "mét",
+      "unit_price": 80000,
+      "total_amount": 80000000
+    }
+  ],
+  "subtotal": 80000000,
+  "tax_rate": 8.0,
+  "tax_amount": 6400000,
+  "total_payable": 86400000
+}

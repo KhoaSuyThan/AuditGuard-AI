@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_13",
+  "name": "Logistics - Phụ phí nhiên liệu tăng không báo trước",
+  "description": "Nhà xe tự ý tăng phụ phí xăng dầu từ 10% lên 25% trên hóa đơn, chênh lệch 4.500.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 4860000
+}

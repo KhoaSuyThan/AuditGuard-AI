@@ -1,0 +1,23 @@
+{
+  "invoice_number": "HD-2026-08892",
+  "invoice_series": "1C26TH",
+  "invoice_date": "2026-11-05",
+  "vendor_tax_code": "0311223344",
+  "vendor_name": "CÔNG TY DỊCH VỤ VẬN TẢI TỐC HÀNH",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Dịch vụ vận chuyển hàng hóa",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 15000000,
+      "total_amount": 15000000
+    }
+  ],
+  "subtotal": 15000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1200000,
+  "total_payable": 16200000,
+  "is_duplicate_mock": true,
+  "previous_paid_date": "2026-10-15"
+}

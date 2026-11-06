@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-312",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "NHÀ PHÂN PHỐI XI MĂNG MIỀN NAM",
+    "tax_code": "0304411223",
+    "address": "Quốc lộ 1A, Bình Chánh, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Xi măng INSEE Đa Dụng PCB40 (Bao 50kg)",
+      "quantity": 500,
+      "unit": "bao",
+      "unit_price": 92000,
+      "total_price": 46000000
+    }
+  ],
+  "subtotal": 46000000,
+  "tax_rate": 8.0,
+  "tax_amount": 3680000,
+  "total_amount": 49680000
+}

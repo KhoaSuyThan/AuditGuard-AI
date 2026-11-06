@@ -1,0 +1,31 @@
+{
+  "po_number": "PO-2026-307",
+  "order_date": "2026-11-01",
+  "vendor": {
+    "name": "NHÀ MÁY NÔNG SẢN NGUYÊN BẢN ĐÀ LẠT",
+    "tax_code": "5801234567",
+    "address": "Xã Trạm Hành, TP. Đà Lạt, Lâm Đồng"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Hạt Cà Phê Arabica Cầu Đất Rang Mộc",
+      "quantity": 100,
+      "unit": "kg",
+      "unit_price": 220000,
+      "total_price": 22000000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Syrup Monin Hạt Dẻ (Chai 700ml)",
+      "quantity": 24,
+      "unit": "chai",
+      "unit_price": 250000,
+      "total_price": 6000000
+    }
+  ],
+  "subtotal": 28000000,
+  "tax_rate": 8.0,
+  "tax_amount": 2240000,
+  "total_amount": 30240000
+}

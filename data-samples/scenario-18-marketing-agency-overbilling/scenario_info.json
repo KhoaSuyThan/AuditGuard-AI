@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_18",
+  "name": "Chiến dịch Marketing - Xuất hóa đơn vượt trần ngân sách",
+  "description": "Ngân sách tối đa được duyệt là 50 triệu. Agency xuất hóa đơn 65 triệu với lý do 'tối ưu chuyển đổi tăng vọt', chênh lệch 16.200.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 16200000
+}

@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_17",
+  "name": "Nội thất Khách sạn - Giao hàng từng đợt (Partial Delivery)",
+  "description": "PO đặt 100 bộ bàn ghế làm việc. Nhà máy giao đợt 1 là 35 bộ và xuất hóa đơn đợt 1 đúng 35 bộ. Hệ thống xác nhận khớp đợt 1.",
+  "expected_result": "PASSED",
+  "expected_discrepancies": 0,
+  "financial_impact_vnd": 0
+}

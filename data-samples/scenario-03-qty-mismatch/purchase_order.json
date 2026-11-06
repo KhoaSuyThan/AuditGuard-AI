@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-105",
+  "order_date": "2026-11-03",
+  "vendor": {
+    "name": "NHÀ PHÂN PHỐI LINH KIỆN SÀI GÒN TECH",
+    "tax_code": "0308889999",
+    "address": "200 Cộng Hòa, Tân Bình, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Ổ cứng SSD Kingston NV2 500GB PCIe Gen4",
+      "quantity": 50,
+      "unit": "cái",
+      "unit_price": 850000,
+      "total_price": 42500000
+    }
+  ],
+  "subtotal": 42500000,
+  "tax_rate": 8.0,
+  "tax_amount": 3400000,
+  "total_amount": 45900000
+}

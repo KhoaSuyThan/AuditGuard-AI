@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-089",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "CÔNG TY CỔ PHẦN CÔNG NGHỆ MINH ANH",
+    "tax_code": "0109876543",
+    "address": "45 Cầu Giấy, Hà Nội"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Hộp mực in Laser HP 85A Chính hãng",
+      "quantity": 10,
+      "unit": "hộp",
+      "unit_price": 350000,
+      "total_price": 3500000
+    }
+  ],
+  "subtotal": 3500000,
+  "tax_rate": 8.0,
+  "tax_amount": 280000,
+  "total_amount": 3780000
+}

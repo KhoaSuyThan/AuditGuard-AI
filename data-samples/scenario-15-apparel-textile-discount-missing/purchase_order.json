@@ -1,0 +1,25 @@
+{
+  "po_number": "PO-2026-311",
+  "order_date": "2026-11-01",
+  "vendor": {
+    "name": "XƯỞNG DỆT LỤA BẢO LỘC SILK",
+    "tax_code": "5809871234",
+    "address": "TP. Bảo Lộc, Lâm Đồng"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Vải lụa tơ tằm dệt trơn khổ 1.5m",
+      "quantity": 1000,
+      "unit": "mét",
+      "unit_price": 80000,
+      "total_price": 80000000
+    }
+  ],
+  "subtotal": 76000000,
+  "tax_rate": 8.0,
+  "tax_amount": 6080000,
+  "total_amount": 82080000,
+  "discount_rate": 5.0,
+  "discount_amount": 4000000
+}

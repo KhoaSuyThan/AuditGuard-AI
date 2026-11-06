@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_11",
+  "name": "F&B Chuỗi Cà phê - Khớp hoàn hảo",
+  "description": "Nhập kho hạt cà phê hạt rang mộc Arabica Cầu Đất và Syrup hạt dẻ Monin. Số lượng và chiết khấu khớp 100%.",
+  "expected_result": "PASSED",
+  "expected_discrepancies": 0,
+  "financial_impact_vnd": 0
+}

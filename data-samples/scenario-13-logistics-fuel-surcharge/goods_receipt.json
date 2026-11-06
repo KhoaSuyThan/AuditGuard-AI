@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-309",
+  "po_number": "PO-2026-309",
+  "received_date": "2026-11-04",
+  "warehouse_keeper": "Điều độ kho cảng",
+  "items": [
+    {
+      "item_name": "Container 40ft bàn giao",
+      "quantity_received": 2,
+      "unit": "chuyến",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "2 container đã hạ bãi an toàn."
+}

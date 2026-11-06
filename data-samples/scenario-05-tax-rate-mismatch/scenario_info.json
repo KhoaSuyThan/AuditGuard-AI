@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_05",
+  "name": "Sai lệch Thuế suất VAT (8% vs 10%)",
+  "description": "Theo Nghị định giảm thuế GTGT, mặt hàng thuộc nhóm 8% nhưng nhà cung cấp áp nhầm thuế suất 10% cũ, chênh lệch 960.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 960000
+}

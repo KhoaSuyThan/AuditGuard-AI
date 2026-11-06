@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-306",
+  "order_date": "2026-11-02",
+  "vendor": {
+    "name": "CÔNG TY TNHH TRUYỀN THÔNG VÀ SỰ KIỆN ÁNH DƯƠNG",
+    "tax_code": "0309991112",
+    "address": "15 Nam Kỳ Khởi Nghĩa, Quận 1, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Dịch vụ thuê màn hình LED sự kiện nội bộ",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 20000000,
+      "total_price": 20000000
+    }
+  ],
+  "subtotal": 20000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1600000,
+  "total_amount": 21600000
+}

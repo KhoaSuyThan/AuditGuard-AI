@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-005612",
+  "invoice_series": "1C26TT",
+  "invoice_date": "2026-11-03",
+  "vendor_tax_code": "0316789123",
+  "vendor_name": "CÔNG TY ĐIỆN MÁY TÂN TIẾN",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Quạt thông gió Mitsubishi EX-25SC",
+      "quantity": 20,
+      "unit": "cái",
+      "unit_price": 2400000,
+      "total_amount": 48000000
+    }
+  ],
+  "subtotal": 48000000,
+  "tax_rate": 10.0,
+  "tax_amount": 4800000,
+  "total_payable": 52800000
+}

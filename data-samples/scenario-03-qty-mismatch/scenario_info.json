@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_03",
+  "name": "Sai lệch Số lượng (Quantity Mismatch - Giao thiếu hàng)",
+  "description": "Kho chỉ nhận thực tế 40 chiếc SSD nhưng hóa đơn xuất đòi tiền đủ 50 chiếc. Nguy cơ thất thoát 9.180.000 VNĐ.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 9180000
+}

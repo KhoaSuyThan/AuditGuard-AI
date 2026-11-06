@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_16",
+  "name": "Vật liệu Xây dựng - 500 Bao Xi măng INSEE Khớp 100%",
+  "description": "Nhập 500 bao xi măng đa dụng INSEE cho công trình. Số lượng, đơn giá và phiếu giao kho khớp hoàn hảo.",
+  "expected_result": "PASSED",
+  "expected_discrepancies": 0,
+  "financial_impact_vnd": 0
+}

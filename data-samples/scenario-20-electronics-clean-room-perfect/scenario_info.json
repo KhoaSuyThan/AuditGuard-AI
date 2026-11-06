@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_20",
+  "name": "Nhà máy Vi mạch - Vật tư Phòng sạch Khớp 100%",
+  "description": "Nhập khẩu găng tay nitrile tĩnh điện ESD và khăn lau phòng sạch sợi siêu mịn. Khớp 100% từng thông số kỹ thuật.",
+  "expected_result": "PASSED",
+  "expected_discrepancies": 0,
+  "financial_impact_vnd": 0
+}

@@ -1,0 +1,21 @@
+{
+  "grn_number": "GRN-2026-308",
+  "po_number": "PO-2026-308",
+  "received_date": "2026-11-02",
+  "warehouse_keeper": "IT Manager",
+  "items": [
+    {
+      "item_name": "JetBrains License Key",
+      "quantity_received": 5,
+      "unit": "user",
+      "condition": "GOOD"
+    },
+    {
+      "item_name": "GitHub Enterprise Organization Seats",
+      "quantity_received": 20,
+      "unit": "seat",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Đã kích hoạt thành công trên tenant công ty."
+}

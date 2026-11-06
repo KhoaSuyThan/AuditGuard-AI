@@ -1,0 +1,21 @@
+{
+  "grn_number": "GRN-2026-001",
+  "po_number": "PO-2026-001",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Trần Văn Kho",
+  "items": [
+    {
+      "item_name": "Giấy in A4 Double A 70gsm",
+      "quantity_received": 50,
+      "unit": "ram",
+      "condition": "GOOD"
+    },
+    {
+      "item_name": "Bút bi Thiên Long TL-027",
+      "quantity_received": 10,
+      "unit": "hộp",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Hàng hóa nguyên đai nguyên kiện, đủ số lượng."
+}

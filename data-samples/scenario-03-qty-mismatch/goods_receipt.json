@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-105",
+  "po_number": "PO-2026-105",
+  "received_date": "2026-11-05",
+  "warehouse_keeper": "Phạm Văn Kho",
+  "items": [
+    {
+      "item_name": "SSD Kingston 500GB NV2 M.2",
+      "quantity_received": 40,
+      "unit": "cái",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nhà cung cấp giao thiếu 10 chiếc do tạm thời hết hàng tồn kho. Hẹn giao bổ sung sau."
+}

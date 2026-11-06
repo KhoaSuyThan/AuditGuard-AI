@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-009852",
+  "invoice_series": "1C26MAA",
+  "invoice_date": "2026-11-04",
+  "vendor_tax_code": "0109876543",
+  "vendor_name": "CÔNG TY CỔ PHẦN CÔNG NGHỆ MINH ANH",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Hộp mực in Laser CE285A (HP 85A)",
+      "quantity": 10,
+      "unit": "hộp",
+      "unit_price": 420000,
+      "total_amount": 4200000
+    }
+  ],
+  "subtotal": 4200000,
+  "tax_rate": 8.0,
+  "tax_amount": 336000,
+  "total_payable": 4536000
+}

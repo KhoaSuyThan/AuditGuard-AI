@@ -1,0 +1,22 @@
+{
+  "invoice_number": "HD-001188",
+  "invoice_series": "1C26VP",
+  "invoice_date": "2026-11-03",
+  "vendor_tax_code": "0319999888",
+  "vendor_name": "CÔNG TY TNHH THƯƠNG MẠI TỔNG HỢP VẠN PHÁT",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Phí dịch vụ bảo trì sửa chữa máy lạnh",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 24000000,
+      "total_amount": 24000000
+    }
+  ],
+  "subtotal": 24000000,
+  "tax_rate": 8.0,
+  "tax_amount": 1920000,
+  "total_payable": 25920000,
+  "vendor_status_warning": "DOANH_NGHIEP_NGUNG_HOAT_DONG_CHUA_HOAN_TAT_THU_TUC_DONG_MA_SO_THUE"
+}

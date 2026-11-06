@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-314",
+  "order_date": "2026-10-15",
+  "vendor": {
+    "name": "CÔNG TY TNHH QUẢNG CÁO SỐ DIGI-GROWTH",
+    "tax_code": "0318877665",
+    "address": "Tầng 12 Bitexco, Quận 1, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Gói chạy quảng cáo hiệu suất đa kênh tháng 10/2026 (Max Cap)",
+      "quantity": 1,
+      "unit": "gói",
+      "unit_price": 50000000,
+      "total_price": 50000000
+    }
+  ],
+  "subtotal": 50000000,
+  "tax_rate": 8.0,
+  "tax_amount": 4000000,
+  "total_amount": 54000000
+}

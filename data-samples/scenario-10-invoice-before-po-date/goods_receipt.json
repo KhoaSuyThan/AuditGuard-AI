@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-306",
+  "po_number": "PO-2026-306",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Trưởng ban Sự kiện",
+  "items": [
+    {
+      "item_name": "Biên bản nghiệm thu màn hình LED",
+      "quantity_received": 1,
+      "unit": "gói",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nghiệm thu sau sự kiện."
+}

@@ -1,0 +1,29 @@
+{
+  "invoice_number": "HD-009124",
+  "invoice_series": "1C26BD",
+  "invoice_date": "2026-11-04",
+  "vendor_tax_code": "0305566778",
+  "vendor_name": "CÔNG TY VẬN TẢI BIỂN ĐÔNG",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Cước vận chuyển container 40ft",
+      "quantity": 2,
+      "unit": "chuyến",
+      "unit_price": 15000000,
+      "total_amount": 30000000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Phụ phí biến động giá dầu DO 25%",
+      "quantity": 1,
+      "unit": "lần",
+      "unit_price": 4500000,
+      "total_amount": 4500000
+    }
+  ],
+  "subtotal": 34500000,
+  "tax_rate": 8.0,
+  "tax_amount": 2760000,
+  "total_payable": 37260000
+}

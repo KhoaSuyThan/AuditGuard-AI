@@ -1,0 +1,29 @@
+{
+  "invoice_number": "HD-001923",
+  "invoice_series": "1C26PT",
+  "invoice_date": "2026-11-04",
+  "vendor_tax_code": "0314455667",
+  "vendor_name": "NHÀ XƯỞNG CƠ KHÍ CHÍNH XÁC PHÚ THỊNH",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Khung sắt hộp sơn tĩnh điện",
+      "quantity": 4,
+      "unit": "bộ",
+      "unit_price": 4500000,
+      "total_amount": 18000000
+    },
+    {
+      "line_number": 2,
+      "item_name": "Phí bốc xếp hàng cồng kềnh ngoài giờ",
+      "quantity": 1,
+      "unit": "lần",
+      "unit_price": 1500000,
+      "total_amount": 1500000
+    }
+  ],
+  "subtotal": 19500000,
+  "tax_rate": 8.0,
+  "tax_amount": 1560000,
+  "total_payable": 21060000
+}

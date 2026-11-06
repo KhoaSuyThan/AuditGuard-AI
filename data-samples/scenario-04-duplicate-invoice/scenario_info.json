@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_04",
+  "name": "Gian lận Hóa đơn trùng lặp (Duplicate Payment Fraud)",
+  "description": "Số hóa đơn HD-2026-08892 đã từng được phê duyệt chi trả ngày 15/10/2026. Nhà cung cấp tiếp tục gửi lại để đòi tiền lần 2. Nguy cơ thất thoát 16.200.000 VNĐ.",
+  "expected_result": "REJECTED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 16200000
+}

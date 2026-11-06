@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-303",
+  "po_number": "PO-2026-303",
+  "received_date": "2026-11-05",
+  "warehouse_keeper": "Bếp trưởng Lâm",
+  "items": [
+    {
+      "item_name": "Thăn bò Úc",
+      "quantity_received": 40,
+      "unit": "kg",
+      "condition": "REJECTED_10KG"
+    }
+  ],
+  "note": "Tổng giao 50kg, trả lại tài xế 10kg do rách túi bảo quản và đổi màu. Chỉ nhập kho 40kg."
+}

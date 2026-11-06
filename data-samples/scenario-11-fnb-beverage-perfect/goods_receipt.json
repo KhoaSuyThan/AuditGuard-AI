@@ -1,0 +1,21 @@
+{
+  "grn_number": "GRN-2026-307",
+  "po_number": "PO-2026-307",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Quản lý Barista",
+  "items": [
+    {
+      "item_name": "Hạt cà phê Arabica Cầu Đất",
+      "quantity_received": 100,
+      "unit": "kg",
+      "condition": "GOOD"
+    },
+    {
+      "item_name": "Syrup Monin Hazelnut 700ml",
+      "quantity_received": 24,
+      "unit": "chai",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nhận đủ bao bì niêm phong đạt chuẩn."
+}

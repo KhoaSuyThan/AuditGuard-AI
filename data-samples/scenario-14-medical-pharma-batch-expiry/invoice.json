@@ -1,0 +1,21 @@
+{
+  "invoice_number": "HD-006231",
+  "invoice_series": "1C26PC",
+  "invoice_date": "2026-11-04",
+  "vendor_tax_code": "0101133557",
+  "vendor_name": "CÔNG TY DƯỢC PHẨM TRUNG ƯƠNG PHARCO",
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Augmentin 1g viên nén (Lô B2501, HSD: 12/2026)",
+      "quantity": 200,
+      "unit": "hộp",
+      "unit_price": 185000,
+      "total_amount": 37000000
+    }
+  ],
+  "subtotal": 37000000,
+  "tax_rate": 5.0,
+  "tax_amount": 1850000,
+  "total_payable": 38850000
+}

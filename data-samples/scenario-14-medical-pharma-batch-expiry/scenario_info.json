@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_14",
+  "name": "Dược phẩm - Lệch Số Lô và Hạn Dùng (Batch Expiry)",
+  "description": "Kho tiếp nhận lô thuốc hạn dùng 2028 (Lô B2608), nhưng hóa đơn xuất ghi Lô B2501 hạn dùng cận date 2026. Nguy cơ thu hồi thuốc vi phạm Bộ Y Tế.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 0
+}

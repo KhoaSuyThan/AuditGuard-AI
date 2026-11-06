@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_10",
+  "name": "Bất thường Trình tự Thời gian (Invoice trước ngày PO)",
+  "description": "Ngày xuất hóa đơn (25/10/2026) diễn ra trước ngày lập Đơn đặt hàng (02/11/2026). Dấu hiệu hợp thức hóa chứng từ mua bán khống.",
+  "expected_result": "FLAGGED",
+  "expected_discrepancies": 1,
+  "financial_impact_vnd": 0
+}

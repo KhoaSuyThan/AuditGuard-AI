@@ -1,0 +1,8 @@
+{
+  "scenario_id": "SCENARIO_01",
+  "name": "Khớp hoàn hảo 100% (Perfect Match)",
+  "description": "Toàn bộ thông tin đơn đặt hàng, phiếu nhập kho và hóa đơn tài chính khớp nhau tuyệt đối về số lượng, đơn giá và thuế suất.",
+  "expected_result": "PASSED",
+  "expected_discrepancies": 0,
+  "financial_impact_vnd": 0
+}

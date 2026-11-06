@@ -1,0 +1,23 @@
+{
+  "po_number": "PO-2026-309",
+  "order_date": "2026-11-01",
+  "vendor": {
+    "name": "CÔNG TY VẬN TẢI BIỂN ĐÔNG",
+    "tax_code": "0305566778",
+    "address": "Cảng Cát Lái, Quận 2, TP.HCM"
+  },
+  "items": [
+    {
+      "line_number": 1,
+      "item_name": "Cước vận chuyển container 40ft tuyến Hải Phòng - Sài Gòn",
+      "quantity": 2,
+      "unit": "chuyến",
+      "unit_price": 15000000,
+      "total_price": 30000000
+    }
+  ],
+  "subtotal": 30000000,
+  "tax_rate": 8.0,
+  "tax_amount": 2400000,
+  "total_amount": 32400000
+}

@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-311",
+  "po_number": "PO-2026-311",
+  "received_date": "2026-11-03",
+  "warehouse_keeper": "Thủ kho Xưởng may",
+  "items": [
+    {
+      "item_name": "Vải lụa Bảo Lộc trơn",
+      "quantity_received": 1000,
+      "unit": "mét",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nhận đủ 50 cây vải x 20m."
+}

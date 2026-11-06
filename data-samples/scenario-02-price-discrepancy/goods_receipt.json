@@ -1,0 +1,15 @@
+{
+  "grn_number": "GRN-2026-089",
+  "po_number": "PO-2026-089",
+  "received_date": "2026-11-04",
+  "warehouse_keeper": "Lê Văn Kho",
+  "items": [
+    {
+      "item_name": "Mực in HP 85A",
+      "quantity_received": 10,
+      "unit": "hộp",
+      "condition": "GOOD"
+    }
+  ],
+  "note": "Nhận đủ 10 hộp."
+}
