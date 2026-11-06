@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AuditGuard.Api/AuditGuard.Api.csproj" />
+    <Project Path="src/AuditGuard.Application/AuditGuard.Application.csproj" />
+    <Project Path="src/AuditGuard.Domain/AuditGuard.Domain.csproj" />
+    <Project Path="src/AuditGuard.Infrastructure/AuditGuard.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AuditGuard.Tests/AuditGuard.Tests.csproj" />
+  </Folder>
+</Solution>
