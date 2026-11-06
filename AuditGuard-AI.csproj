@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Ngăn MSBuild tự động quét code từ các thư mục con server, client, ai-engine -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);server/**;client/**;ai-engine/**;data-samples/**;docker/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="server\src\AuditGuard.Api\AuditGuard.Api.csproj" />
+  </ItemGroup>
+</Project>

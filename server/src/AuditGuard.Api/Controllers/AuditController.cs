@@ -53,13 +53,33 @@ public class AuditController : ControllerBase
         _logger = logger;
     }
 
+    private string ResolveDataSamplesPath(string? subFolder = null)
+    {
+        var searchRoots = new[] { _env.ContentRootPath, AppContext.BaseDirectory, Directory.GetCurrentDirectory() };
+        foreach (var startDir in searchRoots)
+        {
+            var cur = new DirectoryInfo(startDir);
+            while (cur != null)
+            {
+                var target = Path.Combine(cur.FullName, "data-samples");
+                if (Directory.Exists(target))
+                {
+                    return string.IsNullOrEmpty(subFolder) ? target : Path.Combine(target, subFolder);
+                }
+                cur = cur.Parent;
+            }
+        }
+        var fallback = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "..", "data-samples"));
+        return string.IsNullOrEmpty(subFolder) ? fallback : Path.Combine(fallback, subFolder ?? "");
+    }
+
     /// <summary>
     /// Lấy danh sách 20 kịch bản mẫu từ data-samples
     /// </summary>
     [HttpGet("scenarios")]
     public ActionResult<IEnumerable<ScenarioInfoDto>> GetScenarios()
     {
-        var root = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples"));
+        var root = ResolveDataSamplesPath();
         if (!Directory.Exists(root))
         {
             return Ok(Array.Empty<ScenarioInfoDto>());
@@ -94,7 +114,7 @@ public class AuditController : ControllerBase
     [HttpPost("scenarios/{folderName}/run-async")]
     public async Task<IActionResult> RunScenarioAsync(string folderName, [FromQuery] string? clientSessionId = null)
     {
-        var root = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples", folderName));
+        var root = ResolveDataSamplesPath(folderName);
         if (!Directory.Exists(root))
         {
             return NotFound(new ProblemDetails
@@ -149,7 +169,7 @@ public class AuditController : ControllerBase
     [HttpPost("scenarios/{folderName}/run")]
     public async Task<ActionResult<AuditSessionDto>> RunScenario(string folderName, [FromQuery] string? clientSessionId = null)
     {
-        var root = Path.GetFullPath(Path.Combine(_env.ContentRootPath, "..", "..", "data-samples", folderName));
+        var root = ResolveDataSamplesPath(folderName);
         if (!Directory.Exists(root))
         {
             return NotFound(new ProblemDetails
