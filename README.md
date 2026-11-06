@@ -160,83 +160,101 @@ erDiagram
 
 ---
 
-## 🚀 Quick Start Guide (Hướng dẫn cài đặt Local)
+## 🚀 Quick Start Guide (Hướng dẫn cài đặt & Khởi chạy)
 
 ### Yêu cầu hệ thống (Prerequisites)
 * **HĐH:** Windows 10/11, Ubuntu 22.04+ hoặc macOS.
-* **RAM:** Tối thiểu 16GB RAM.
-* **GPU (Khuyến nghị):** NVIDIA GPU với VRAM $\ge$ 6GB (nếu chỉ dùng CPU, khuyến nghị dùng model `qwen2.5:3b`).
-* **Phần mềm:** Docker Desktop, .NET 8 SDK, Node.js 20+, Python 3.11, [Ollama](https://ollama.com/).
+* **RAM:** Tối thiểu 8GB RAM (Khuyến nghị 16GB).
+* **Phần mềm cần cài đặt:**
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (cho PostgreSQL 16 + pgvector)
+  - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+  - [Node.js 20+ / 22+](https://nodejs.org/)
+  - [Python 3.10+](https://www.python.org/)
+  - [Ollama](https://ollama.com/) (Chạy AI LLM On-Premise)
 
 ---
 
-### Bước 1: Khởi động Cơ sở dữ liệu (PostgreSQL + pgvector)
+### Bảng Ánh xạ Cổng Dịch vụ (Port Mapping)
 
-Chạy container PostgreSQL đã tích hợp sẵn extension `pgvector`:
-
-```bash
-docker run -d \
-  --name auditguard-postgres \
-  -e POSTGRES_USER=audituser \
-  -e POSTGRES_PASSWORD=auditpass \
-  -e POSTGRES_DB=auditguard_db \
-  -p 5432:5432 \
-  pgvector/pgvector:pg16
-```
+| Dịch vụ | Cổng (Port) | Đường dẫn truy cập | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| **Web Dashboard** | `3000` | [http://localhost:3000](http://localhost:3000) | Giao diện React 18 + Vite (Đã cấu hình proxy `/api` sang port 5000) |
+| **Backend API** | `5000` | [http://localhost:5000](http://localhost:5000) | .NET 8 Web API, SignalR Hub `/hubs/audit`, Swagger `/swagger` |
+| **AI Engine** | `8000` | [http://localhost:8000](http://localhost:8000) | FastAPI Microservice, Tài liệu tương tác `/docs` |
+| **Ollama Service** | `11434` | [http://localhost:11434](http://localhost:11434) | Quản lý và thực thi mô hình LLM Local |
+| **PostgreSQL DB** | `5432` | `localhost:5432` | CSDL lưu trữ chứng từ và vector embeddings pgvector |
 
 ---
 
-### Bước 2: Tải và khởi chạy Mô hình AI Local với Ollama
+### Cách 1: Khởi chạy 1-Click Trực tiếp từ Thư mục Gốc (Khuyến nghị)
 
-1. Khởi động Ollama:
+Mở 3 cửa sổ Terminal tại thư mục gốc của dự án (`AuditGuard-AI/`):
+
+#### Bước 0: Khởi động Cơ sở dữ liệu PostgreSQL + pgvector
 ```bash
-ollama serve
+docker compose up -d postgres
 ```
+*(Lệnh này tự động kích hoạt container PostgreSQL 16 với pgvector và nạp sẵn schema từ `docker/01-init.sql`)*.
 
-2. Kéo mô hình **Qwen 2.5:7B** (hoặc `qwen2.5:3b` cho máy nhẹ):
+#### Terminal 1: Khởi chạy Backend (.NET 8 Web API & Background Worker)
 ```bash
-ollama pull qwen2.5:7b-instruct
-```
-
----
-
-### Bước 3: Cài đặt & Chạy AI Worker Service (Python)
-
-```bash
-cd ai-engine
-python -m venv venv
-# Kích hoạt môi trường ảo:
-# Windows:
-.\venv\Scripts\activate
-# Linux/Mac:
-# source venv/bin/activate
-
-pip install -r requirements.txt
-python main.py
-```
-*(AI Worker Service sẽ lắng nghe tại cổng `http://localhost:8000`)*
-
----
-
-### Bước 4: Khởi chạy Backend (.NET 8 Web API)
-
-```bash
-cd server
-dotnet restore
 dotnet run
 ```
-*(Backend API sẽ hoạt động tại `http://localhost:5000` kèm Swagger UI tại `/swagger`)*
+* Backend tự động lắng nghe tại `http://localhost:5000` và kết nối với PostgreSQL.
+* Swagger UI tra cứu API tại: `http://localhost:5000/swagger`.
+
+#### Terminal 2: Khởi chạy AI Engine (Tự động hóa 100%)
+```bash
+python main.py
+```
+* **Tự động hóa hoàn toàn:** Script sẽ tự động kiểm tra dependencies (tự `pip install` nếu thiếu), tự động bật `ollama serve` ở chế độ ngầm nếu chưa chạy, kiểm tra và tự kéo model `qwen2.5:3b`, sau đó khởi động FastAPI tại `http://localhost:8000`.
+
+#### Terminal 3: Khởi chạy Giao diện Web Dashboard (React 18 + Vite)
+```bash
+npm run dev
+```
+* Web Dashboard sẵn sàng tại: `http://localhost:3000`.
 
 ---
 
-### Bước 5: Khởi chạy Frontend (React + Vite)
+### Cách 2: Khởi chạy Thủ công Từng Dịch vụ (Dành cho Debug / Phát triển chi tiết)
 
+<details>
+<summary><b>Xem chi tiết các bước chạy thủ công từng phần</b></summary>
+
+#### 1. Khởi động PostgreSQL qua Docker:
+```bash
+docker compose up -d postgres
+```
+
+#### 2. Khởi động Ollama & Tải mô hình Qwen 2.5:
+```bash
+ollama serve
+ollama pull qwen2.5:3b
+```
+
+#### 3. Khởi chạy AI Engine Service:
+```bash
+cd ai-engine
+pip install -r requirements.txt
+python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+#### 4. Khởi chạy Backend Web API:
+```bash
+dotnet run --project server/src/AuditGuard.Api
+# hoặc đứng tại thư mục server/src/AuditGuard.Api rồi chạy 'dotnet run'
+```
+
+#### 5. Khởi chạy Frontend Web:
 ```bash
 cd client
 npm install
 npm run dev
 ```
-Truy cập giao diện Web Dashboard tại: `http://localhost:5173`.
+Truy cập giao diện tại: `http://localhost:3000`.
+
+</details>
 
 ---
 

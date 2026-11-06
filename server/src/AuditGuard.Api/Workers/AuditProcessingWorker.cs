@@ -103,8 +103,8 @@ public class AuditProcessingWorker : BackgroundService
         {
             if (!string.IsNullOrEmpty(job.ScenarioFolderName))
             {
-                // Xử lý kịch bản mẫu từ thư mục data-samples
-                var root = Path.GetFullPath(Path.Combine(env.ContentRootPath, "..", "..", "data-samples", job.ScenarioFolderName));
+                // Xử lý kịch bản mẫu từ thư mục data-samples (Dò tìm đường dẫn động)
+                var root = ResolveDataSamplesPath(env.ContentRootPath, job.ScenarioFolderName);
                 if (!Directory.Exists(root))
                 {
                     throw new FileNotFoundException($"Không tìm thấy thư mục kịch bản mẫu: {job.ScenarioFolderName}");
@@ -270,5 +270,25 @@ public class AuditProcessingWorker : BackgroundService
                 _logger.LogWarning(exClean, "Không thể xóa tệp tạm của phiên đối soát {SessionId}", job.SessionId);
             }
         }
+    }
+
+    private static string ResolveDataSamplesPath(string contentRootPath, string? subFolder = null)
+    {
+        var searchRoots = new[] { contentRootPath, AppContext.BaseDirectory, Directory.GetCurrentDirectory() };
+        foreach (var startDir in searchRoots)
+        {
+            var cur = new DirectoryInfo(startDir);
+            while (cur != null)
+            {
+                var target = Path.Combine(cur.FullName, "data-samples");
+                if (Directory.Exists(target))
+                {
+                    return string.IsNullOrEmpty(subFolder) ? target : Path.Combine(target, subFolder);
+                }
+                cur = cur.Parent;
+            }
+        }
+        var fallback = Path.GetFullPath(Path.Combine(contentRootPath, "..", "..", "..", "data-samples"));
+        return string.IsNullOrEmpty(subFolder) ? fallback : Path.Combine(fallback, subFolder);
     }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "auditguard-ai-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nền tảng AI Agent Đối soát Chứng từ 3 Chiều Doanh Nghiệp (100% On-Premise)",
+  "scripts": {
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "preview": "npm --prefix client run preview"
+  }
+}

@@ -96,7 +96,9 @@ Yêu cầu định dạng JSON CHÍNH XÁC như sau (không thêm văn bản gi�
 }}
 
 Nội dung Đơn đặt hàng:
-"""{raw_text}"""
+--- NỘI DUNG VĂN BẢN ---
+{raw_text}
+--- HẾT NỘI DUNG ---
 """
         elif doc_type_upper == "GRN":
             return f"""Bạn là trợ lý AI chuyên bóc tách thông tin Phiếu nhập kho (Goods Receipt Note - GRN) tại kho bãi Việt Nam.
@@ -118,7 +120,9 @@ Yêu cầu định dạng JSON CHÍNH XÁC như sau (không thêm văn bản gi�
 }}
 
 Nội dung Phiếu nhập kho:
-"""{raw_text}"""
+--- NỘI DUNG VĂN BẢN ---
+{raw_text}
+--- HẾT NỘI DUNG ---
 """
         else:
             return f"""Bạn là trợ lý AI kế toán chuyên bóc tách thông tin Hóa đơn giá trị gia tăng (VAT Invoice) của Việt Nam.
@@ -148,7 +152,9 @@ Yêu cầu định dạng JSON CHÍNH XÁC như sau (không thêm văn bản gi�
 }}
 
 Nội dung Hóa đơn VAT:
-"""{raw_text}"""
+--- NỘI DUNG VĂN BẢN ---
+{raw_text}
+--- HẾT NỘI DUNG ---
 """
 
     async def extract_document_data(self, raw_text: str, document_type: str = "INVOICE") -> Dict[str, Any]:

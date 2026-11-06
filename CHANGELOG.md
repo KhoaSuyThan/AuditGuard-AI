@@ -5,6 +5,62 @@ Tất cả các thay đổi quan trọng của dự án sẽ được ghi nhận
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/).
 
 ---
+## [Cập nhật Toàn diện Tài liệu Hướng dẫn Khởi chạy] - 2026-11-06
+### Đã tài liệu hóa (Documented)
+- **Cập nhật `README.md` (Quick Start Guide)**:
+  - Bổ sung bảng ánh xạ cổng dịch vụ chi tiết (Frontend: `3000`, Backend: `5000`, AI Engine: `8000`, Ollama: `11434`, PostgreSQL: `5432`).
+  - Hướng dẫn rõ ràng 2 cách khởi chạy:
+    - **Cách 1 (Khuyến nghị 1-Click từ thư mục gốc)**: Khởi động database `docker compose up -d postgres`, Backend `dotnet run`, AI Engine `python main.py` (tự động bật Ollama và tải model), Frontend `npm run dev`.
+    - **Cách 2 (Thủ công từng dịch vụ)**: Hướng dẫn chi tiết từng câu lệnh cho việc gỡ lỗi hoặc phát triển độc lập.
+  - Sửa đổi các cổng và model cũ (điều chỉnh từ port 5173 thành 3000, model mặc định `qwen2.5:3b`).
+
+## [Sửa lỗi Cú pháp Extractor, Tối ưu hóa Launcher AI & Chuẩn hóa Khởi chạy] - 2026-11-06
+### Đã sửa & Tinh chỉnh (Fixed & Refined)
+- **Sửa lỗi cú pháp trích xuất AI**:
+  - Khắc phục lỗi `SyntaxError: invalid syntax` tại `ai-engine/services/extractor.py` (do ký tự `"""{raw_text}"""` lồng trong f-string đóng sớm chuỗi đa dòng). Đã chuẩn hóa phân cách văn bản ở cả 3 hàm trích xuất PO, GRN và Hóa đơn VAT.
+- **Nâng cấp Launcher AI (`main.py`)**:
+  - So sánh chính xác tag mô hình: Chuyển sang so sánh khớp chính xác tag `qwen2.5:3b` từ Ollama API (`api/tags`), loại bỏ kiểm tra tiền tố `qwen2.5` lỏng lẻo.
+  - Kiểm tra phụ thuộc toàn diện: Hàm `ensure_dependencies()` được mở rộng để kiểm tra trọn vẹn 12 module cốt lõi tương ứng `requirements.txt` (thay vì chỉ kiểm tra 3 module), tự động cài đặt qua pip nếu thiếu.
+- **Chuẩn hóa Cổng kết nối & Hướng dẫn Môi trường**:
+  - Thống nhất cổng Backend là `http://localhost:5000` trên toàn bộ hệ thống (`launchSettings.json`, Vite proxy, Kestrel entry point).
+  - Bổ sung rõ ràng bước khởi chạy cơ sở dữ liệu PostgreSQL qua Docker (`docker compose up -d postgres`).
+  - Ghi nhận cơ chế khóa tệp (File Lock) của Windows: Khi lệnh `dotnet run` đang chiếm dụng DLL trong một tiến trình terminal khác, lệnh `dotnet build` chạy song song sẽ bị chặn ghi (mã thoát 1). Khi dừng tiến trình đang chạy, `dotnet build` và `dotnet test` trên Solution hoàn tất thành công với mã thoát 0.
+
+## [Hỗ trợ Trực tiếp Lệnh 'dotnet run' tại Thư mục Gốc] - 2026-11-06
+### Đã thêm & Tối ưu hóa (Added & Optimized)
+- **Hỗ trợ gõ trực tiếp `dotnet run` không cần cờ tham số**:
+  - Tạo `AuditGuard-AI.csproj` và `Program.cs` ngay tại thư mục gốc để làm entry point chuyển tiếp.
+  - Cấu hình `DefaultItemExcludes` chuẩn xác để ngăn MSBuild quét đệ quy các thư mục con (`server/`, `client/`, `ai-engine/`), tránh hoàn toàn xung đột trùng lặp mã nguồn.
+  - Tự động nạp assembly Controllers của API và ánh xạ cổng mặc định `http://localhost:5000` khớp 100% với cấu hình Proxy của Web Dashboard Vite.
+  - Thêm `AuditGuard-AI.csproj` vào `AuditGuard.sln`, đảm bảo `dotnet build` đạt 0 lỗi 0 cảnh báo cho toàn bộ 6 dự án.
+
+## [Tối ưu hóa Khởi chạy Dự án & Tích hợp 1-Click Root Run] - 2026-11-06
+### Đã thêm & Cải tiến (Added & Improved)
+- **Tự động hóa Khởi chạy Toàn diện từ Thư mục Gốc**:
+  - `main.py` (Root): Tự động phát hiện cổng 11434, tự khởi động tiến trình ngầm `ollama serve` nếu Ollama chưa chạy, kiểm tra và hướng dẫn tải model `qwen2.5:3b`, sau đó khởi chạy FastAPI AI Engine trên cổng 8000.
+  - `package.json` (Root): Bổ sung lệnh `npm run dev` và `npm run build` ủy quyền trực tiếp vào thư mục `client/`, cho phép khởi chạy giao diện Web Dashboard ngay tại thư mục gốc.
+  - `AuditGuard.sln` (Root): Bổ sung file Solution tại thư mục gốc chứa trọn vẹn 5 dự án (.NET 8), cho phép build và test nhanh bằng `dotnet build` và `dotnet test`.
+- **Hoàn thiện Logic Xử lý Kịch bản & Dò tìm Đường dẫn Mẫu**:
+  - Triển khai hàm `ResolveDataSamplesPath` trong `AuditProcessingWorker` và `AuditController` tự động tìm ngược lên các cấp thư mục cha để định vị chính xác thư mục `data-samples/`.
+  - Hỗ trợ linh hoạt cả hai định dạng đặt tên file phiếu kho (`goods_receipt.json` và `goods_receipt_note.json`).
+- **Xác thực Kiểm thử & Biên dịch (0 Error, 0 Warning)**:
+  - `dotnet build AuditGuard.sln`: Hoàn thành 100% với 0 lỗi, 0 cảnh báo cho cả 5 project .NET 8.
+  - `dotnet test AuditGuard.sln`: 100% Passed (3/3 tests passed).
+  - `npm run build`: Hoàn thành 100% production bundle cho React 18 TypeScript.
+
+## [Giai đoạn 3: Hoàn thiện Web Dashboard React 18 + Vite + Tailwind CSS] - 2026-11-06
+### Đã thêm & Tích hợp (Added & Integrated)
+- **Hệ thống Giao diện Web Dashboard**: Khởi tạo dự án React 18 + TypeScript + Vite tại `client/` với phong cách Dark Mode cao cấp (Glassmorphism, Slate-950, Neon Cyan/Emerald accents, typography Plus Jakarta Sans).
+- **Kết nối SignalR Realtime Hub chuẩn xác**:
+  - Client tự động kết nối `/hubs/audit`, tạo `clientSessionId` và gọi `JoinSession(sessionId)` trước khi gửi yêu cầu, bảo đảm không bỏ lỡ bất kỳ bước tiến trình nào.
+  - Lắng nghe sự kiện `ReceiveProgress` và `ReceiveAuditCompleted` để tự động cập nhật thanh tiến trình 5 bước và kết quả kiểm toán.
+- **Thành phần ScenarioSelector (Demo 1-Click)**: Hiển thị 20 kịch bản mẫu từ API `GET /api/audit/scenarios`, phân loại theo rủi ro (Hợp lệ, Gian lận, Sai lệch) kèm nút kích hoạt đối soát tức thì.
+- **Thành phần FileUploadZone (Tải lên 3 tệp)**: Giao diện kéo thả 3 tệp riêng biệt (PO, Phiếu kho GRN, Hóa đơn VAT), giới hạn định dạng an toàn (.pdf/.json, tối đa 20MB) và cảnh báo rõ ràng về ảnh scan.
+- **Thành phần ThreeWayMatchingTable (Đối soát 3 chiều)**: Bảng đối chiếu từng dòng hàng chi tiết giữa PO vs Kho GRN vs Hóa đơn, hiển thị điểm tương đồng ngữ nghĩa AI (Cosine Similarity %) và highlight trực quan màu sắc.
+- **Thành phần DiscrepancyList & DisputeEmailModal**: Danh sách chi tiết các sai lệch tài chính kèm popup sinh thư khiếu nại nhà cung cấp tự động (`POST /api/audit/sessions/{id}/email`) hỗ trợ sao chép 1-click.
+- **Khôi phục kết quả bền vững**: Tích hợp lưu trữ L1 cache ở `localStorage` để bảo toàn trọn vẹn `ComparisonRows` và điểm semantic ngay cả khi người dùng tải lại trang.
+- **Xác nhận biên dịch Production**: `npm run build` hoàn tất thành công 100% không có lỗi TypeScript hay Vite bundle.
+
 ## [Giai đoạn 2: Sửa Blocker Tích Hợp End-to-End & Tạo Solution Chuẩn .sln] - 2026-11-06
 ### Đã sửa đổi & Gia cố (Fixed & Hardened)
 - **Sửa trường Matching**: Đọc chuẩn xác thuộc tính `matched_invoice_item` (kèm fallback `invoice_item`) từ kết quả API `match-items` của AI Engine.
