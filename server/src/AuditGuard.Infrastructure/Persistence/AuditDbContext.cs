@@ -42,6 +42,10 @@ public class AuditDbContext : DbContext
             entity.ToTable("purchase_orders");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.PoNumber).IsUnique();
+            entity.HasOne(e => e.Vendor)
+                  .WithMany(e => e.PurchaseOrders)
+                  .HasForeignKey(e => e.VendorId)
+                  .IsRequired(false);
             entity.HasMany(e => e.Items)
                   .WithOne(e => e.PurchaseOrder)
                   .HasForeignKey(e => e.PoId)
@@ -60,6 +64,10 @@ public class AuditDbContext : DbContext
             entity.ToTable("goods_receipts");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.GrnNumber).IsUnique();
+            entity.HasOne(e => e.PurchaseOrder)
+                  .WithMany()
+                  .HasForeignKey(e => e.PoId)
+                  .IsRequired(false);
             entity.HasMany(e => e.Items)
                   .WithOne(e => e.GoodsReceipt)
                   .HasForeignKey(e => e.GrId)
@@ -78,6 +86,12 @@ public class AuditDbContext : DbContext
             entity.ToTable("invoices");
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => new { e.VendorTaxCode, e.InvoiceNumber });
+            entity.Property(e => e.RawOcrJson)
+                  .HasColumnType("jsonb");
+            entity.HasOne<Invoice>()
+                  .WithMany()
+                  .HasForeignKey(e => e.OriginalInvoiceId)
+                  .IsRequired(false);
             entity.HasMany(e => e.Items)
                   .WithOne(e => e.Invoice)
                   .HasForeignKey(e => e.InvoiceId)
@@ -98,6 +112,18 @@ public class AuditDbContext : DbContext
             entity.HasIndex(e => e.SessionCode).IsUnique();
             entity.Property(e => e.Status)
                   .HasConversion<string>();
+            entity.HasOne(e => e.PurchaseOrder)
+                  .WithMany()
+                  .HasForeignKey(e => e.PoId)
+                  .IsRequired(false);
+            entity.HasOne(e => e.GoodsReceipt)
+                  .WithMany()
+                  .HasForeignKey(e => e.GrnId)
+                  .IsRequired(false);
+            entity.HasOne(e => e.Invoice)
+                  .WithMany()
+                  .HasForeignKey(e => e.InvoiceId)
+                  .IsRequired(false);
             entity.HasMany(e => e.Discrepancies)
                   .WithOne(e => e.Session)
                   .HasForeignKey(e => e.SessionId)

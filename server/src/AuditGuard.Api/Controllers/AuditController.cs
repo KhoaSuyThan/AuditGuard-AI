@@ -248,12 +248,46 @@ public class AuditController : ControllerBase
         // Lưu bền vững vào CSDL PostgreSQL
         try
         {
-            if (po.Id == Guid.Empty) po.Id = Guid.NewGuid();
-            if (grn.Id == Guid.Empty) grn.Id = Guid.NewGuid();
-            if (invoice.Id == Guid.Empty) invoice.Id = Guid.NewGuid();
+            if (po.Vendor != null && !string.IsNullOrEmpty(po.Vendor.TaxCode))
+            {
+                var existingVendor = await _dbContext.Vendors.FirstOrDefaultAsync(v => v.TaxCode == po.Vendor.TaxCode);
+                if (existingVendor != null)
+                {
+                    po.VendorId = existingVendor.Id;
+                    po.Vendor = null;
+                }
+                else
+                {
+                    if (po.Vendor.Id == Guid.Empty) po.Vendor.Id = Guid.NewGuid();
+                    _dbContext.Vendors.Add(po.Vendor);
+                    po.VendorId = po.Vendor.Id;
+                }
+            }
 
-            _dbContext.PurchaseOrders.Add(po);
-            _dbContext.GoodsReceipts.Add(grn);
+            var existingPo = await _dbContext.PurchaseOrders.FirstOrDefaultAsync(p => p.PoNumber == po.PoNumber);
+            if (existingPo != null)
+            {
+                po = existingPo;
+            }
+            else
+            {
+                if (po.Id == Guid.Empty) po.Id = Guid.NewGuid();
+                _dbContext.PurchaseOrders.Add(po);
+            }
+
+            var existingGrn = await _dbContext.GoodsReceipts.FirstOrDefaultAsync(g => g.GrnNumber == grn.GrnNumber);
+            if (existingGrn != null)
+            {
+                grn = existingGrn;
+            }
+            else
+            {
+                if (grn.Id == Guid.Empty) grn.Id = Guid.NewGuid();
+                _dbContext.GoodsReceipts.Add(grn);
+            }
+
+            if (string.IsNullOrWhiteSpace(invoice.RawOcrJson)) invoice.RawOcrJson = null;
+            if (invoice.Id == Guid.Empty) invoice.Id = Guid.NewGuid();
             _dbContext.Invoices.Add(invoice);
 
             var auditEntity = new AuditSession

@@ -5,6 +5,41 @@ Tất cả các thay đổi quan trọng của dự án sẽ được ghi nhận
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/).
 
 ---
+## [Khắc phục Triệt để DbUpdateConcurrencyException với ExecuteDelete/Update] - 2026-11-07
+### Đã sửa (Fixed)
+- **Giải quyết lỗi `The database operation was expected to affect 1 row(s), but actually affected 0 row(s)`**:
+  - Loại bỏ hoàn toàn phương thức `Discrepancies.Clear()` gây desync ChangeTracker trong `AuditProcessingWorker`.
+  - Sử dụng trực tiếp `ExecuteDeleteAsync` để xóa các sai lệch cũ của phiên đối soát trên database, ngăn ngừa lỗi optimistic concurrency khi collection chưa nạp đầy đủ.
+  - Sử dụng `ExecuteUpdateAsync` khi cập nhật trạng thái `Rejected` trong khối catch để đảm bảo cập nhật trạng thái lỗi độc lập, không bị ảnh hưởng bởi trạng thái ChangeTracker của các entity khác.
+  - Thêm mới trực tiếp danh sách sai lệch qua `dbContext.AuditDiscrepancies.Add(...)`.
+
+## [Cấu hình Kiểu Dữ liệu JSONB cho raw_ocr_json] - 2026-11-07
+### Đã sửa (Fixed)
+- **Khắc phục lỗi `42804: column "raw_ocr_json" is of type jsonb but expression is of type text`**:
+  - Bổ sung cấu hình `.HasColumnType("jsonb")` cho thuộc tính `Invoice.RawOcrJson` trong [AuditDbContext.cs](file:///c:/Users/aaa/Pictures/SaveCode/AuditGuard-AI/server/src/AuditGuard.Infrastructure/Persistence/AuditDbContext.cs), đảm bảo Npgsql ánh xạ chính xác kiểu dữ liệu PostgreSQL JSONB.
+  - Xử lý chuỗi rỗng sang `null` trước khi lưu vào CSDL trong `AuditProcessingWorker` và `AuditController` để tránh vi phạm cú pháp JSON.
+
+## [Loại bỏ Shadow Property vendor_id & Tối ưu Lưu trữ Idempotent] - 2026-11-07
+### Đã sửa (Fixed)
+- **Khắc phục lỗi `column "vendor_id" of relation "invoices" does not exist`**:
+  - Loại bỏ thuộc tính điều hướng `Invoices` trong entity `Vendor` ([Entities.cs](file:///c:/Users/aaa/Pictures/SaveCode/AuditGuard-AI/server/src/AuditGuard.Domain/Entities/Entities.cs)) do bảng `invoices` trong PostgreSQL chỉ lưu trực tiếp `vendor_tax_code` và không có cột khóa ngoại `vendor_id`.
+  - Ngăn chặn hoàn toàn việc EF Core tự động sinh câu lệnh SQL `SELECT ... i.vendor_id` và `INSERT ... vendor_id`.
+- **Cơ chế lưu trữ an toàn (Idempotent Persistence)**:
+  - Tự động kiểm tra trùng lặp `po_number` và `grn_number` trước khi thêm vào CSDL trong `AuditProcessingWorker` và `AuditController`, tái sử dụng bản ghi nếu kịch bản được chạy nhiều lần để tránh vi phạm Unique Constraint.
+  - Tự động kiểm tra và gắn `VendorId` theo `tax_code`, ngăn chặn việc EF Core thêm trùng lặp Vendor.
+  - Hiển thị chi tiết `ex.InnerException.Message` khi xảy ra lỗi lưu CSDL qua SignalR để người dùng dễ dàng nắm bắt nguyên nhân.
+
+## [Sửa lỗi Ánh xạ Khóa ngoại EF Core Khớp Schema PostgreSQL] - 2026-11-07
+### Đã sửa (Fixed)
+- **Khắc phục lỗi `column a.goods_receipt_id does not exist`**:
+  - Cấu hình rõ ràng các khóa ngoại (Foreign Keys) trong `AuditDbContext.cs` (`OnModelCreating`):
+    - Ánh xạ navigation `AuditSession.GoodsReceipt` sử dụng `GrnId` (`grn_id`).
+    - Ánh xạ navigation `AuditSession.PurchaseOrder` sử dụng `PoId` (`po_id`).
+    - Ánh xạ navigation `AuditSession.Invoice` sử dụng `InvoiceId` (`invoice_id`).
+    - Ánh xạ navigation `GoodsReceipt.PurchaseOrder` sử dụng `PoId` (`po_id`).
+    - Ánh xạ navigation `PurchaseOrder.Vendor` sử dụng `VendorId` (`vendor_id`).
+  - Ngăn chặn hoàn toàn việc EF Core tự sinh shadow property (`goods_receipt_id`), bảo đảm tương thích 100% với schema `01-init.sql`.
+
 ## [Cập nhật Toàn diện Tài liệu Hướng dẫn Khởi chạy] - 2026-11-06
 ### Đã tài liệu hóa (Documented)
 - **Cập nhật `README.md` (Quick Start Guide)**:

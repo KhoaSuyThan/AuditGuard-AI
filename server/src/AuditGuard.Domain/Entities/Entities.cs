@@ -16,7 +16,6 @@ public class Vendor
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
-    public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
 }
 
 public class PurchaseOrder
