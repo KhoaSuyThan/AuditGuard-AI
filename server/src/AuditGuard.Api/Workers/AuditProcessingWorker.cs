@@ -177,17 +177,50 @@ public class AuditProcessingWorker : BackgroundService
             // 4. Lưu vết bền vững vào PostgreSQL qua EF Core
             await _hubContext.Clients.Group(channel).SendAsync("ReceiveProgress", "Persistence", 90, "Đang lưu trữ hồ sơ kiểm toán vào CSDL PostgreSQL...", ct);
 
-            // Lưu trước các thực thể liên quan nếu chưa có trong DB
-            if (po.Id == Guid.Empty) po.Id = Guid.NewGuid();
-            if (grn.Id == Guid.Empty) grn.Id = Guid.NewGuid();
-            if (invoice.Id == Guid.Empty) invoice.Id = Guid.NewGuid();
+            // Lưu trước các thực thể liên quan nếu chưa có trong DB (đảm bảo tính idempotent và không vi phạm unique constraints)
+            if (po.Vendor != null && !string.IsNullOrEmpty(po.Vendor.TaxCode))
+            {
+                var existingVendor = await dbContext.Vendors.FirstOrDefaultAsync(v => v.TaxCode == po.Vendor.TaxCode, ct);
+                if (existingVendor != null)
+                {
+                    po.VendorId = existingVendor.Id;
+                    po.Vendor = null;
+                }
+                else
+                {
+                    if (po.Vendor.Id == Guid.Empty) po.Vendor.Id = Guid.NewGuid();
+                    dbContext.Vendors.Add(po.Vendor);
+                    po.VendorId = po.Vendor.Id;
+                }
+            }
 
-            dbContext.PurchaseOrders.Add(po);
-            dbContext.GoodsReceipts.Add(grn);
+            var existingPo = await dbContext.PurchaseOrders.FirstOrDefaultAsync(p => p.PoNumber == po.PoNumber, ct);
+            if (existingPo != null)
+            {
+                po = existingPo;
+            }
+            else
+            {
+                if (po.Id == Guid.Empty) po.Id = Guid.NewGuid();
+                dbContext.PurchaseOrders.Add(po);
+            }
+
+            var existingGrn = await dbContext.GoodsReceipts.FirstOrDefaultAsync(g => g.GrnNumber == grn.GrnNumber, ct);
+            if (existingGrn != null)
+            {
+                grn = existingGrn;
+            }
+            else
+            {
+                if (grn.Id == Guid.Empty) grn.Id = Guid.NewGuid();
+                dbContext.GoodsReceipts.Add(grn);
+            }
+
+            if (string.IsNullOrWhiteSpace(invoice.RawOcrJson)) invoice.RawOcrJson = null;
+            if (invoice.Id == Guid.Empty) invoice.Id = Guid.NewGuid();
             dbContext.Invoices.Add(invoice);
 
             var dbSession = await dbContext.AuditSessions
-                .Include(s => s.Discrepancies)
                 .FirstOrDefaultAsync(s => s.Id == job.SessionId, ct);
 
             if (dbSession == null)
@@ -209,11 +242,15 @@ public class AuditProcessingWorker : BackgroundService
             dbSession.DiscrepancyCount = result.Discrepancies.Count;
             dbSession.Notes = $"COMPLETED: Đối soát hoàn tất lúc {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC";
 
-            dbSession.Discrepancies.Clear();
+            // Xóa discrepancies cũ trực tiếp trên CSDL để tránh xung đột ChangeTracker
+            await dbContext.AuditDiscrepancies.Where(d => d.SessionId == job.SessionId).ExecuteDeleteAsync(ct);
+
+            // Thêm danh sách sai lệch mới trực tiếp vào DbSet
             foreach (var d in result.Discrepancies)
             {
-                dbSession.Discrepancies.Add(new AuditDiscrepancy
+                dbContext.AuditDiscrepancies.Add(new AuditDiscrepancy
                 {
+                    Id = Guid.NewGuid(),
                     SessionId = job.SessionId,
                     DiscrepancyType = Enum.TryParse<DiscrepancyType>(d.DiscrepancyType, out var dt) ? dt : DiscrepancyType.PriceMismatch,
                     Severity = Enum.TryParse<DiscrepancySeverity>(d.Severity, out var ds) ? ds : DiscrepancySeverity.Critical,
@@ -236,25 +273,24 @@ public class AuditProcessingWorker : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Lỗi khi xử lý phiên đối soát {SessionId}", job.SessionId);
+            var detailedError = ex.InnerException != null ? $"{ex.Message} -> {ex.InnerException.Message}" : ex.Message;
+            _logger.LogError(ex, "Lỗi khi xử lý phiên đối soát {SessionId}: {Error}", job.SessionId, detailedError);
 
-            // Cập nhật trạng thái FAILED rõ ràng trong CSDL, không nuốt lỗi
+            // Cập nhật trạng thái FAILED trực tiếp vào CSDL bằng ExecuteUpdateAsync, không nuốt lỗi
             try
             {
-                var failedSession = await dbContext.AuditSessions.FirstOrDefaultAsync(s => s.Id == job.SessionId, ct);
-                if (failedSession != null)
-                {
-                    failedSession.Status = AuditStatus.Rejected;
-                    failedSession.Notes = $"FAILED: {ex.Message}";
-                    await dbContext.SaveChangesAsync(ct);
-                }
+                await dbContext.AuditSessions
+                    .Where(s => s.Id == job.SessionId)
+                    .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(s => s.Status, AuditStatus.Rejected)
+                        .SetProperty(s => s.Notes, $"FAILED: {detailedError}"), ct);
             }
             catch (Exception exSaveFail)
             {
                 _logger.LogError(exSaveFail, "Không thể lưu trạng thái FAILED vào CSDL cho SessionId {SessionId}", job.SessionId);
             }
 
-            await _hubContext.Clients.Group(channel).SendAsync("ReceiveProgress", "Failed", 0, $"Lỗi đối soát: {ex.Message}", ct);
+            await _hubContext.Clients.Group(channel).SendAsync("ReceiveProgress", "Failed", 0, $"Lỗi đối soát: {detailedError}", ct);
         }
         finally
         {
